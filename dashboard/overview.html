@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventHub - Organizer Dashboard</title>
+<meta name="description" content="EventHub organizer dashboard overview.">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" onload="window.lucideLoaded=true; if(window.initLucide) window.initLucide();"></script>
+<script>
+  window.initLucide = function() { if(window.lucide) lucide.createIcons(); };
+  document.addEventListener('DOMContentLoaded', function() { if(window.lucideLoaded) window.initLucide(); });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #165DFF;
+    --primary-hover: #0E4BD9;
+    --foreground: #080C1A;
+    --secondary: #6A7686;
+    --muted: #EFF2F7;
+    --border: #F3F4F3;
+    --card-grey: #F1F3F6;
+    --success: #30B22D;
+    --error: #ED6B60;
+    --warning: #FED71F;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-success: var(--success);
+    --color-error: var(--error);
+    --color-warning: var(--warning);
+    --font-sans: var(--font-sans);
+    --radius-card: 24px;
+    --radius-button: 50px;
+    --radius-icon: 12px;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="font-sans bg-muted min-h-screen overflow-x-hidden">
+
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen max-h-screen flex-1 overflow-hidden">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="flex flex-col w-[280px] shrink-0 h-screen fixed inset-y-0 left-0 z-50 bg-white border-r border-border transform -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-hidden">
+    <!-- Top Bar with logo -->
+    <div class="flex items-center justify-between border-b border-border h-[90px] px-5 gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-9 bg-primary rounded-xl flex items-center justify-center">
+          <i data-lucide="zap" class="w-5 h-5 text-white"></i>
+        </div>
+        <h1 class="font-semibold text-xl tracking-tight">EventHub</h1>
+      </div>
+      <button onclick="toggleSidebar()" class="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="x" class="size-6 text-secondary"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="flex flex-col p-5 pb-28 gap-6 overflow-y-auto flex-1">
+      <div class="flex flex-col gap-4">
+        <h3 class="font-medium text-sm text-secondary">Main Menu</h3>
+        <div class="flex flex-col gap-1">
+          <a href="#" class="group active cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="layout-dashboard" class="size-6 text-secondary group-[.active]:text-primary group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">Overview</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-[.active]:bg-muted group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="calendar" class="size-6 text-secondary group-[.active]:text-primary group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-[.active]:font-semibold group-[.active]:text-foreground group-hover:text-foreground transition-all duration-300">My Events</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Help Card -->
+    <div class="absolute bottom-0 left-0 w-[280px]">
+      <div class="flex items-center justify-between border-t bg-white border-border p-5 gap-3">
+        <div class="min-w-0">
+          <p class="font-semibold text-foreground">Need help?</p>
+          <a href="#" class="cursor-pointer"><span class="text-sm text-secondary hover:text-primary hover:underline transition-all duration-300">Contact support</span></a>
+        </div>
+        <div class="size-11 bg-primary/10 rounded-xl flex items-center justify-center flex-shrink-0">
+          <i data-lucide="life-buoy" class="size-6 text-primary"></i>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 lg:ml-[280px] flex flex-col bg-muted min-h-screen overflow-x-hidden">
+    <!-- Top Header Bar -->
+    <div class="flex items-center justify-between w-full h-[90px] shrink-0 border-b border-border bg-white px-5 md:px-8">
+      <button onclick="toggleSidebar()" class="lg:hidden size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="menu" class="size-6 text-foreground"></i>
+      </button>
+      <h2 class="hidden lg:block font-bold text-2xl text-foreground">Overview</h2>
+      <div class="flex items-center gap-3">
+        <button onclick="showToast('Search not implemented in demo', 'info')" class="size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+          <i data-lucide="search" class="size-6 text-secondary"></i>
+        </button>
+        <button class="size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer relative">
+          <i data-lucide="bell" class="size-6 text-secondary"></i>
+          <span class="absolute -top-1 -right-1 h-5 px-1.5 rounded-full bg-error text-white text-xs font-medium flex items-center justify-center">2</span>
+        </button>
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-border">
+          <div class="text-right">
+            <p class="font-semibold text-foreground text-sm">Alex Organizer</p>
+            <p class="text-secondary text-xs">Neon Events</p>
+          </div>
+          <img src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=100&h=100&fit=crop" alt="Profile" class="size-11 rounded-full object-cover ring-2 ring-border">
+        </div>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="flex-1 overflow-y-auto p-5 md:p-8">
+      
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6">
+        <!-- Revenue Card -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-[6px]">
+              <div class="size-11 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="dollar-sign" class="size-6 text-primary"></i>
+              </div>
+              <p class="font-medium text-secondary">Total Revenue</p>
+            </div>
+            <span class="text-success text-xs font-bold bg-success/10 px-2 py-1 rounded-full">+12.5%</span>
+          </div>
+          <p class="font-bold text-[32px] leading-10">Rp 1.2B</p>
+        </div>
+
+        <!-- Tickets Sold Card -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-[6px]">
+              <div class="size-11 bg-success/10 rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="ticket" class="size-6 text-success"></i>
+              </div>
+              <p class="font-medium text-secondary">Tickets Sold</p>
+            </div>
+            <span class="text-success text-xs font-bold bg-success/10 px-2 py-1 rounded-full">+8.2%</span>
+          </div>
+          <p class="font-bold text-[32px] leading-10">4.5K</p>
+        </div>
+
+        <!-- Total Events Card -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-[6px]">
+              <div class="size-11 bg-warning/10 rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="calendar-check" class="size-6 text-warning"></i>
+              </div>
+              <p class="font-medium text-secondary">Total Events</p>
+            </div>
+          </div>
+          <p class="font-bold text-[32px] leading-10">24</p>
+        </div>
+
+        <!-- Upcoming Events Card -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-[6px]">
+              <div class="size-11 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="clock" class="size-6 text-primary"></i>
+              </div>
+              <p class="font-medium text-secondary">Upcoming</p>
+            </div>
+          </div>
+          <p class="font-bold text-[32px] leading-10">3</p>
+        </div>
+      </div>
+
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <!-- Revenue Line Chart -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-4 bg-white">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg text-foreground">Revenue Trend</h3>
+            <button class="flex items-center rounded-3xl border border-border py-2 px-4 gap-2 bg-muted/50 w-fit cursor-pointer hover:bg-muted transition-all">
+              <span class="font-medium text-xs text-secondary">Last 12 Months</span>
+              <i data-lucide="chevron-down" class="size-4 text-secondary"></i>
+            </button>
+          </div>
+          <div class="w-full h-[300px]">
+            <canvas id="revenueChart"></canvas>
+          </div>
+        </div>
+
+        <!-- Tickets Bar Chart -->
+        <div class="flex flex-col rounded-2xl border border-border p-6 gap-4 bg-white">
+          <div class="flex items-center justify-between">
+            <h3 class="font-bold text-lg text-foreground">Sales by Tier</h3>
+            <button class="cursor-pointer">
+              <i data-lucide="more-horizontal" class="size-5 text-secondary"></i>
+            </button>
+          </div>
+          <div class="w-full h-[300px]">
+            <canvas id="tierChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Orders Table -->
+      <div class="flex flex-col rounded-2xl border border-border bg-white overflow-hidden">
+        <div class="flex items-center justify-between p-6 border-b border-border">
+          <h3 class="font-bold text-lg text-foreground">Recent Orders</h3>
+          <a href="#" class="cursor-pointer"><span class="text-sm text-primary font-semibold hover:underline">View All</span></a>
+        </div>
+        
+        <div class="overflow-x-auto">
+          <table class="w-full min-w-[700px]">
+            <thead class="bg-muted/50">
+              <tr>
+                <th class="w-[30%] px-6 py-4 text-left text-xs font-semibold text-secondary uppercase tracking-wider">Attendee</th>
+                <th class="w-[30%] px-6 py-4 text-left text-xs font-semibold text-secondary uppercase tracking-wider">Event</th>
+                <th class="w-[20%] px-6 py-4 text-left text-xs font-semibold text-secondary uppercase tracking-wider">Amount</th>
+                <th class="w-[20%] px-6 py-4 text-left text-xs font-semibold text-secondary uppercase tracking-wider">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border bg-white">
+              <!-- Row 1 -->
+              <tr class="hover:bg-muted/20 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <img class="h-10 w-10 rounded-full object-cover ring-1 ring-border" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop" alt="">
+                    <div>
+                      <div class="text-sm font-semibold text-foreground">Budi Santoso</div>
+                      <div class="text-xs text-secondary">budi@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-foreground">Neon Lights Fest</div>
+                  <div class="text-xs text-secondary">24 Dec 2024</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-bold text-foreground">Rp 450.000</div>
+                  <div class="text-xs text-secondary">2 Tickets</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+                    Paid
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Row 2 -->
+              <tr class="hover:bg-muted/20 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <img class="h-10 w-10 rounded-full object-cover ring-1 ring-border" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop" alt="">
+                    <div>
+                      <div class="text-sm font-semibold text-foreground">Siti Rahma</div>
+                      <div class="text-xs text-secondary">siti@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-foreground">Tech Summit 2024</div>
+                  <div class="text-xs text-secondary">15 Jan 2025</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-bold text-foreground">Rp 1.500.000</div>
+                  <div class="text-xs text-secondary">1 Ticket (VIP)</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+                    Paid
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Row 3 -->
+              <tr class="hover:bg-muted/20 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <img class="h-10 w-10 rounded-full object-cover ring-1 ring-border" src="https://images.unsplash.com/photo-1527980965255-d3b416303d12?w=100&h=100&fit=crop" alt="">
+                    <div>
+                      <div class="text-sm font-semibold text-foreground">Andi Wijaya</div>
+                      <div class="text-xs text-secondary">andi@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-foreground">Jazz Night</div>
+                  <div class="text-xs text-secondary">30 Dec 2024</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-bold text-foreground">Rp 300.000</div>
+                  <div class="text-xs text-secondary">3 Tickets</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-warning/10 text-warning-dark">
+                    Pending
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Row 4 -->
+              <tr class="hover:bg-muted/20 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <img class="h-10 w-10 rounded-full object-cover ring-1 ring-border" src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&fit=crop" alt="">
+                    <div>
+                      <div class="text-sm font-semibold text-foreground">Rudi Hartono</div>
+                      <div class="text-xs text-secondary">rudi@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-foreground">Neon Lights Fest</div>
+                  <div class="text-xs text-secondary">24 Dec 2024</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-bold text-foreground">Rp 225.000</div>
+                  <div class="text-xs text-secondary">1 Ticket</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-success/10 text-success">
+                    Paid
+                  </span>
+                </td>
+              </tr>
+
+              <!-- Row 5 -->
+              <tr class="hover:bg-muted/20 transition-colors">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex items-center gap-3">
+                    <img class="h-10 w-10 rounded-full object-cover ring-1 ring-border" src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&h=100&fit=crop" alt="">
+                    <div>
+                      <div class="text-sm font-semibold text-foreground">Maya Putri</div>
+                      <div class="text-xs text-secondary">maya@example.com</div>
+                    </div>
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-foreground">Workshop UI/UX</div>
+                  <div class="text-xs text-secondary">10 Jan 2025</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-bold text-foreground">Rp 750.000</div>
+                  <div class="text-xs text-secondary">1 Ticket</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-error/10 text-error">
+                    Failed
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-5 right-5 z-[60] bg-foreground text-white px-6 py-4 rounded-xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3">
+  <i id="toast-icon" data-lucide="check-circle" class="size-5 text-success"></i>
+  <span id="toast-message" class="font-medium">Notification message</span>
+</div>
+
+<script>
+// Sidebar Toggle
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('-translate-x-full');
+  overlay.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+
+// Toast Function
+function showToast(message, type = 'success') {
+  const toast = document.getElementById('toast');
+  const msgEl = document.getElementById('toast-message');
+  const iconEl = document.getElementById('toast-icon');
+  
+  msgEl.textContent = message;
+  
+  // Reset icon classes
+  iconEl.className = 'size-5';
+  if (type === 'success') {
+    iconEl.setAttribute('data-lucide', 'check-circle');
+    iconEl.classList.add('text-success');
+  } else if (type === 'error') {
+    iconEl.setAttribute('data-lucide', 'x-circle');
+    iconEl.classList.add('text-error');
+  } else {
+    iconEl.setAttribute('data-lucide', 'info');
+    iconEl.classList.add('text-primary');
+  }
+  
+  lucide.createIcons();
+  
+  toast.classList.remove('translate-y-20', 'opacity-0');
+  setTimeout(() => {
+    toast.classList.add('translate-y-20', 'opacity-0');
+  }, 3000);
+}
+
+// Chart.js Initialization
+document.addEventListener('DOMContentLoaded', function() {
+  // Revenue Chart (Line)
+  const ctxRevenue = document.getElementById('revenueChart').getContext('2d');
+  
+  // Gradient for Line Chart
+  const gradientRevenue = ctxRevenue.createLinearGradient(0, 0, 0, 400);
+  gradientRevenue.addColorStop(0, 'rgba(22, 93, 255, 0.2)');
+  gradientRevenue.addColorStop(1, 'rgba(22, 93, 255, 0)');
+
+  new Chart(ctxRevenue, {
+    type: 'line',
+    data: {
+      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      datasets: [{
+        label: 'Revenue (Millions)',
+        data: [120, 150, 180, 220, 200, 250, 280, 320, 350, 380, 420, 480],
+        borderColor: '#165DFF',
+        backgroundColor: gradientRevenue,
+        borderWidth: 2,
+        tension: 0.4,
+        fill: true,
+        pointBackgroundColor: '#165DFF',
+        pointRadius: 0,
+        pointHoverRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#080C1A',
+          padding: 12,
+          titleFont: { family: "'Lexend Deca', sans-serif", size: 13 },
+          bodyFont: { family: "'Lexend Deca', sans-serif", size: 13 },
+          cornerRadius: 8,
+          displayColors: false,
+          callbacks: {
+            label: function(context) {
+              return 'Rp ' + context.parsed.y + 'M';
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#F3F4F3', drawBorder: false },
+          ticks: { font: { family: "'Lexend Deca', sans-serif" }, color: '#6A7686' }
+        },
+        x: {
+          grid: { display: false, drawBorder: false },
+          ticks: { font: { family: "'Lexend Deca', sans-serif" }, color: '#6A7686' }
+        }
+      }
+    }
+  });
+
+  // Ticket Tiers Chart (Bar)
+  const ctxTier = document.getElementById('tierChart').getContext('2d');
+  new Chart(ctxTier, {
+    type: 'bar',
+    data: {
+      labels: ['Early Bird', 'Presale 1', 'Presale 2', 'Regular', 'VIP'],
+      datasets: [{
+        label: 'Tickets Sold',
+        data: [1200, 850, 900, 1100, 450],
+        backgroundColor: [
+          '#82D9D7', // Teal
+          '#C9E6FC', // Light Blue
+          '#165DFF', // Primary
+          '#30B22D', // Success
+          '#FED71F'  // Warning (Gold/VIP)
+        ],
+        borderRadius: 8,
+        barThickness: 30
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          backgroundColor: '#080C1A',
+          padding: 12,
+          titleFont: { family: "'Lexend Deca', sans-serif", size: 13 },
+          bodyFont: { family: "'Lexend Deca', sans-serif", size: 13 },
+          cornerRadius: 8,
+          displayColors: false
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          grid: { color: '#F3F4F3', drawBorder: false },
+          ticks: { font: { family: "'Lexend Deca', sans-serif" }, color: '#6A7686' }
+        },
+        x: {
+          grid: { display: false, drawBorder: false },
+          ticks: { font: { family: "'Lexend Deca', sans-serif" }, color: '#6A7686' }
+        }
+      }
+    }
+  });
+});
+</script>
+
+<script>
+// Fallback link handler (injected by ShaynaBuilder)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Show alert if no modal exists
+      var modal = document.getElementById('page-not-found-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        console.log('Navigation prevented: ' + this.href);
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

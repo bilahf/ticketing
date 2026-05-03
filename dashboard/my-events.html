@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventHub - My Events</title>
+<meta name="description" content="Manage your events, track ticket sales, and edit details on EventHub.">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #165DFF;
+    --primary-hover: #0E4BD9;
+    --foreground: #080C1A;
+    --secondary: #6A7686;
+    --muted: #EFF2F7;
+    --border: #F3F4F3;
+    --card-grey: #F1F3F6;
+    --success: #30B22D;
+    --success-light: #DCFCE7;
+    --error: #ED6B60;
+    --error-light: #FEE2E2;
+    --warning: #FED71F;
+    --warning-light: #FEF9C3;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-success: var(--success);
+    --color-success-light: var(--success-light);
+    --color-error: var(--error);
+    --color-error-light: var(--error-light);
+    --color-warning: var(--warning);
+    --color-warning-light: var(--warning-light);
+    --font-sans: var(--font-sans);
+    --radius-card: 24px;
+    --radius-button: 50px;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="font-sans bg-muted min-h-screen text-foreground overflow-x-hidden">
+
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen overflow-hidden">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="flex flex-col w-[280px] shrink-0 h-full fixed inset-y-0 left-0 z-50 bg-white border-r border-border transform -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <!-- Header -->
+    <div class="flex items-center justify-between h-[90px] px-6 border-b border-border">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center">
+          <i data-lucide="ticket" class="w-5 h-5 text-white"></i>
+        </div>
+        <h1 class="font-bold text-xl tracking-tight">EventHub</h1>
+      </div>
+      <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl hover:bg-muted text-secondary">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- Menu -->
+    <div class="flex-1 overflow-y-auto p-5 space-y-6">
+      <div>
+        <h3 class="font-medium text-xs text-secondary uppercase tracking-wider mb-4 px-2">Organizer Menu</h3>
+        <div class="space-y-2">
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-muted hover:text-foreground transition-all group">
+            <i data-lucide="layout-dashboard" class="w-5 h-5 group-hover:text-foreground"></i>
+            <span class="font-medium">Overview</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary/10 text-primary font-semibold transition-all">
+            <i data-lucide="calendar" class="w-5 h-5"></i>
+            <span>My Events</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-muted hover:text-foreground transition-all group">
+            <i data-lucide="users" class="w-5 h-5 group-hover:text-foreground"></i>
+            <span class="font-medium">Attendees</span>
+          </a>
+          <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-secondary hover:bg-muted hover:text-foreground transition-all group">
+            <i data-lucide="megaphone" class="w-5 h-5 group-hover:text-foreground"></i>
+            <span class="font-medium">Marketing</span>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- User Profile -->
+    <div class="p-5 border-t border-border">
+      <a href="#" class="flex items-center gap-3 p-3 rounded-2xl hover:bg-muted transition-all cursor-pointer">
+        <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop" alt="Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-border">
+        <div class="flex-1 min-w-0">
+          <p class="font-semibold text-sm truncate">Alex Organizer</p>
+          <p class="text-xs text-secondary truncate">Pro Plan</p>
+        </div>
+        <i data-lucide="chevron-right" class="w-4 h-4 text-secondary"></i>
+      </a>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 lg:ml-[280px] flex flex-col h-full bg-muted/30 overflow-hidden">
+    <!-- Top Bar -->
+    <div class="h-[90px] bg-white border-b border-border flex items-center justify-between px-6 lg:px-8 shrink-0">
+      <div class="flex items-center gap-4">
+        <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl border border-border bg-white hover:bg-muted text-secondary">
+          <i data-lucide="menu" class="w-5 h-5"></i>
+        </button>
+        <div class="hidden md:flex items-center gap-2 text-sm text-secondary">
+          <span>Organizer</span>
+          <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          <span class="font-medium text-foreground">My Events</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <button class="w-11 h-11 flex items-center justify-center rounded-xl border border-border bg-white hover:ring-1 hover:ring-primary hover:text-primary transition-all cursor-pointer relative">
+          <i data-lucide="bell" class="w-5 h-5 text-secondary"></i>
+          <span class="absolute top-2.5 right-3 w-2 h-2 bg-error rounded-full ring-2 ring-white"></span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Content Scrollable Area -->
+    <div class="flex-1 overflow-y-auto p-6 lg:p-8">
+      <div class="max-w-5xl mx-auto flex flex-col gap-8">
+        
+        <!-- Header Section -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 class="text-2xl font-bold text-foreground">Event Saya</h1>
+            <p class="text-secondary text-sm mt-1">Manage your upcoming and past events</p>
+          </div>
+          <button onclick="openCreateModal()" class="flex items-center justify-center gap-2 px-6 py-3.5 bg-primary hover:bg-primary-hover text-white rounded-full font-bold transition-all shadow-lg shadow-primary/20 cursor-pointer">
+            <i data-lucide="plus" class="w-5 h-5"></i>
+            <span>Buat Event</span>
+          </button>
+        </div>
+
+        <!-- Filter Chips -->
+        <div class="overflow-x-auto scrollbar-hide -mx-6 px-6 sm:mx-0 sm:px-0">
+          <div class="flex items-center gap-2 w-max">
+            <button onclick="filterEvents('all')" class="filter-chip active px-5 py-2.5 rounded-full bg-white border border-border text-secondary font-medium hover:bg-muted transition-all cursor-pointer data-[active=true]:bg-primary data-[active=true]:text-white data-[active=true]:border-primary" data-active="true" data-filter="all">
+              Semua
+            </button>
+            <button onclick="filterEvents('published')" class="filter-chip px-5 py-2.5 rounded-full bg-white border border-border text-secondary font-medium hover:bg-muted transition-all cursor-pointer data-[active=true]:bg-primary data-[active=true]:text-white data-[active=true]:border-primary" data-filter="published">
+              Published
+            </button>
+            <button onclick="filterEvents('draft')" class="filter-chip px-5 py-2.5 rounded-full bg-white border border-border text-secondary font-medium hover:bg-muted transition-all cursor-pointer data-[active=true]:bg-primary data-[active=true]:text-white data-[active=true]:border-primary" data-filter="draft">
+              Draft
+            </button>
+            <button onclick="filterEvents('completed')" class="filter-chip px-5 py-2.5 rounded-full bg-white border border-border text-secondary font-medium hover:bg-muted transition-all cursor-pointer data-[active=true]:bg-primary data-[active=true]:text-white data-[active=true]:border-primary" data-filter="completed">
+              Completed
+            </button>
+          </div>
+        </div>
+
+        <!-- Events List -->
+        <div id="events-container" class="flex flex-col gap-4">
+          
+          <!-- Card 1: Published -->
+          <div class="event-card group flex flex-col md:flex-row gap-5 p-4 bg-white rounded-2xl border border-border hover:ring-1 hover:ring-primary hover:shadow-lg hover:shadow-primary/5 transition-all duration-300" data-status="published">
+            <!-- Thumbnail -->
+            <div class="relative w-full md:w-[240px] aspect-video md:aspect-[4/3] rounded-xl overflow-hidden shrink-0">
+              <img src="https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&q=80" alt="Tech Conference" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+              <div class="absolute top-3 left-3 px-3 py-1 bg-white/90 backdrop-blur-sm rounded-full text-xs font-bold text-foreground shadow-sm">
+                25 Oct 2024
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col flex-1 min-w-0 py-1">
+              <div class="flex items-start justify-between gap-4 mb-2">
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-success-light text-success-dark text-[10px] font-bold uppercase tracking-wide">Published</span>
+                    <span class="text-xs text-secondary">ID: #EVT-2024-001</span>
+                  </div>
+                  <h3 class="text-lg font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">Global Tech Startup Summit 2024</h3>
+                </div>
+                <!-- Dropdown Trigger (Mobile) -->
+                <button class="md:hidden p-1.5 rounded-lg hover:bg-muted text-secondary">
+                  <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-1 mb-5">
+                <div class="flex items-center gap-2 text-sm text-secondary">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-primary shrink-0"></i>
+                  <span class="truncate">Jakarta Convention Center, Indonesia</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-secondary">
+                  <i data-lucide="clock" class="w-4 h-4 text-primary shrink-0"></i>
+                  <span>09:00 AM - 05:00 PM</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="mt-auto">
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-secondary">Ticket Sold</span>
+                  <span class="text-foreground"><span class="font-bold text-primary">850</span> / 1,200</span>
+                </div>
+                <div class="w-full h-2.5 bg-muted rounded-full overflow-hidden">
+                  <div class="h-full bg-primary rounded-full" style="width: 70%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions (Desktop) -->
+            <div class="hidden md:flex flex-col justify-between items-end border-l border-border pl-5 py-1 min-w-[140px]">
+              <div class="flex items-center gap-1">
+                 <button class="p-2 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all" title="Share">
+                   <i data-lucide="share-2" class="w-4 h-4"></i>
+                 </button>
+                 <button class="p-2 rounded-xl text-secondary hover:text-error hover:bg-error/5 transition-all" title="More">
+                   <i data-lucide="more-horizontal" class="w-4 h-4"></i>
+                 </button>
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <a href="#" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/20 transition-all">
+                  <i data-lucide="users" class="w-4 h-4"></i> Attendees
+                </a>
+                <button class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border text-foreground font-semibold text-sm hover:border-primary hover:text-primary transition-all">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i> Edit
+                </button>
+              </div>
+            </div>
+            
+            <!-- Mobile Actions Footer -->
+            <div class="md:hidden flex items-center gap-2 pt-4 border-t border-border mt-2">
+                <a href="#" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary/10 text-primary font-semibold text-sm">
+                  <i data-lucide="users" class="w-4 h-4"></i> Attendees
+                </a>
+                <button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-foreground font-semibold text-sm">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i> Edit
+                </button>
+            </div>
+          </div>
+
+          <!-- Card 2: Draft -->
+          <div class="event-card group flex flex-col md:flex-row gap-5 p-4 bg-white rounded-2xl border border-border hover:ring-1 hover:ring-primary hover:shadow-lg hover:shadow-primary/5 transition-all duration-300" data-status="draft">
+            <!-- Thumbnail -->
+            <div class="relative w-full md:w-[240px] aspect-video md:aspect-[4/3] rounded-xl overflow-hidden shrink-0 grayscale-[0.5] group-hover:grayscale-0 transition-all">
+              <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=800&q=80" alt="Music Fest" class="w-full h-full object-cover">
+              <div class="absolute top-3 left-3 px-3 py-1 bg-black/60 backdrop-blur-sm rounded-full text-xs font-bold text-white shadow-sm">
+                12 Dec 2024
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col flex-1 min-w-0 py-1">
+              <div class="flex items-start justify-between gap-4 mb-2">
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-muted text-secondary font-bold uppercase text-[10px] tracking-wide">Draft</span>
+                    <span class="text-xs text-secondary">ID: #EVT-2024-002</span>
+                  </div>
+                  <h3 class="text-lg font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">Indie Music Festival 2024</h3>
+                </div>
+                <button class="md:hidden p-1.5 rounded-lg hover:bg-muted text-secondary">
+                  <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-1 mb-5">
+                <div class="flex items-center gap-2 text-sm text-secondary">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-primary shrink-0"></i>
+                  <span class="truncate">GBK Sports Complex, Jakarta</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-secondary">
+                  <i data-lucide="clock" class="w-4 h-4 text-primary shrink-0"></i>
+                  <span>04:00 PM - 11:00 PM</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="mt-auto opacity-60">
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-secondary">Ticket Sold</span>
+                  <span class="text-foreground"><span class="font-bold">0</span> / 5,000</span>
+                </div>
+                <div class="w-full h-2.5 bg-muted rounded-full overflow-hidden">
+                  <div class="h-full bg-secondary" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions (Desktop) -->
+            <div class="hidden md:flex flex-col justify-between items-end border-l border-border pl-5 py-1 min-w-[140px]">
+              <div class="flex items-center gap-1">
+                 <button class="p-2 rounded-xl text-secondary hover:text-error hover:bg-error/5 transition-all" title="Delete">
+                   <i data-lucide="trash-2" class="w-4 h-4"></i>
+                 </button>
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <button onclick="publishEvent(this)" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl bg-primary text-white font-semibold text-sm hover:bg-primary-hover transition-all shadow-md shadow-primary/20">
+                  <i data-lucide="upload-cloud" class="w-4 h-4"></i> Publish
+                </button>
+                <button class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border text-foreground font-semibold text-sm hover:border-primary hover:text-primary transition-all">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i> Edit
+                </button>
+              </div>
+            </div>
+
+             <!-- Mobile Actions Footer -->
+             <div class="md:hidden flex items-center gap-2 pt-4 border-t border-border mt-2">
+                <button onclick="publishEvent(this)" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl bg-primary text-white font-semibold text-sm">
+                  <i data-lucide="upload-cloud" class="w-4 h-4"></i> Publish
+                </button>
+                <button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-foreground font-semibold text-sm">
+                  <i data-lucide="edit-3" class="w-4 h-4"></i> Edit
+                </button>
+            </div>
+          </div>
+
+          <!-- Card 3: Completed -->
+          <div class="event-card group flex flex-col md:flex-row gap-5 p-4 bg-white rounded-2xl border border-border hover:ring-1 hover:ring-primary hover:shadow-lg hover:shadow-primary/5 transition-all duration-300" data-status="completed">
+            <!-- Thumbnail -->
+            <div class="relative w-full md:w-[240px] aspect-video md:aspect-[4/3] rounded-xl overflow-hidden shrink-0">
+              <img src="https://images.unsplash.com/photo-1591115765373-5207764f72e7?w=800&q=80" alt="Workshop" class="w-full h-full object-cover grayscale">
+              <div class="absolute inset-0 bg-black/10"></div>
+              <div class="absolute top-3 left-3 px-3 py-1 bg-gray-800 rounded-full text-xs font-bold text-white shadow-sm">
+                10 Aug 2024
+              </div>
+            </div>
+
+            <!-- Content -->
+            <div class="flex flex-col flex-1 min-w-0 py-1">
+              <div class="flex items-start justify-between gap-4 mb-2">
+                <div class="flex flex-col gap-1">
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="px-2.5 py-0.5 rounded-full bg-secondary text-white text-[10px] font-bold uppercase tracking-wide">Completed</span>
+                    <span class="text-xs text-secondary">ID: #EVT-2024-003</span>
+                  </div>
+                  <h3 class="text-lg font-bold text-foreground line-clamp-1 group-hover:text-primary transition-colors">Digital Marketing Masterclass</h3>
+                </div>
+                <button class="md:hidden p-1.5 rounded-lg hover:bg-muted text-secondary">
+                  <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                </button>
+              </div>
+
+              <div class="flex flex-col gap-1 mb-5">
+                <div class="flex items-center gap-2 text-sm text-secondary">
+                  <i data-lucide="map-pin" class="w-4 h-4 text-primary shrink-0"></i>
+                  <span class="truncate">Online (Zoom Meeting)</span>
+                </div>
+                <div class="flex items-center gap-2 text-sm text-secondary">
+                  <i data-lucide="clock" class="w-4 h-4 text-primary shrink-0"></i>
+                  <span>01:00 PM - 03:00 PM</span>
+                </div>
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="mt-auto">
+                <div class="flex items-center justify-between text-xs font-medium mb-2">
+                  <span class="text-secondary">Ticket Sold</span>
+                  <span class="text-foreground"><span class="font-bold text-success">50</span> / 50</span>
+                </div>
+                <div class="w-full h-2.5 bg-muted rounded-full overflow-hidden">
+                  <div class="h-full bg-success" style="width: 100%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions (Desktop) -->
+            <div class="hidden md:flex flex-col justify-between items-end border-l border-border pl-5 py-1 min-w-[140px]">
+              <div class="flex items-center gap-1">
+                 <button class="p-2 rounded-xl text-secondary hover:text-primary hover:bg-primary/5 transition-all" title="Analytics">
+                   <i data-lucide="bar-chart-2" class="w-4 h-4"></i>
+                 </button>
+              </div>
+              <div class="flex flex-col gap-2 w-full">
+                <button class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border text-secondary font-semibold text-sm cursor-not-allowed bg-muted/50">
+                   Ended
+                </button>
+                <a href="#" class="flex items-center justify-center gap-2 w-full py-2.5 rounded-xl border border-border text-foreground font-semibold text-sm hover:border-primary hover:text-primary transition-all">
+                  <i data-lucide="users" class="w-4 h-4"></i> Attendees
+                </a>
+              </div>
+            </div>
+            
+            <!-- Mobile Actions Footer -->
+            <div class="md:hidden flex items-center gap-2 pt-4 border-t border-border mt-2">
+                 <button class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-secondary font-semibold text-sm cursor-not-allowed bg-muted/50">
+                   Ended
+                </button>
+                <a href="#" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl border border-border text-foreground font-semibold text-sm">
+                  <i data-lucide="users" class="w-4 h-4"></i> Attendees
+                </a>
+            </div>
+          </div>
+
+          <!-- Empty State (Hidden by default) -->
+          <div id="empty-state" class="hidden flex-col items-center justify-center py-16 text-center">
+            <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mb-4">
+              <i data-lucide="calendar-off" class="w-10 h-10 text-secondary/50"></i>
+            </div>
+            <h3 class="text-lg font-bold text-foreground mb-2">No events found</h3>
+            <p class="text-secondary max-w-xs mx-auto mb-6">There are no events in this category yet. Create your first event now.</p>
+            <button onclick="openCreateModal()" class="px-6 py-3 rounded-full bg-primary text-white font-bold hover:bg-primary-hover transition-all cursor-pointer">
+              Create Event
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Create Event Modal -->
+<div id="create-modal" class="fixed inset-0 bg-black/60 z-[100] hidden items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
+  <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl scale-95 opacity-0 transition-all duration-300" id="create-modal-content">
+    <div class="flex items-center justify-between p-6 border-b border-border">
+      <h2 class="text-xl font-bold text-foreground">Create New Event</h2>
+      <button onclick="closeCreateModal()" class="p-2 rounded-xl hover:bg-muted text-secondary transition-all cursor-pointer">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+    </div>
+    <div class="p-6 space-y-5">
+      <!-- Event Name -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-foreground">Event Name</label>
+        <div class="relative">
+          <i data-lucide="type" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary"></i>
+          <input type="text" placeholder="e.g. Tech Conference 2024" class="w-full pl-12 pr-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all">
+        </div>
+      </div>
+
+      <!-- Date & Time -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-foreground">Date</label>
+          <div class="relative">
+            <i data-lucide="calendar" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary"></i>
+            <input type="date" class="w-full pl-12 pr-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-secondary">
+          </div>
+        </div>
+        <div class="space-y-2">
+          <label class="text-sm font-semibold text-foreground">Time</label>
+          <div class="relative">
+            <i data-lucide="clock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary"></i>
+            <input type="time" class="w-full pl-12 pr-4 py-3 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-secondary">
+          </div>
+        </div>
+      </div>
+
+      <!-- Category -->
+      <div class="space-y-2">
+        <label class="text-sm font-semibold text-foreground">Category</label>
+        <div class="relative">
+          <i data-lucide="tag" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-secondary"></i>
+          <select class="w-full pl-12 pr-10 py-3 rounded-xl border border-border focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all appearance-none bg-white text-foreground">
+            <option>Select Category</option>
+            <option>Conference</option>
+            <option>Concert</option>
+            <option>Workshop</option>
+            <option>Exhibition</option>
+          </select>
+          <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-secondary pointer-events-none"></i>
+        </div>
+      </div>
+    </div>
+    <div class="p-6 border-t border-border flex justify-end gap-3">
+      <button onclick="closeCreateModal()" class="px-6 py-3 rounded-xl border border-border font-semibold text-secondary hover:bg-muted transition-all cursor-pointer">Cancel</button>
+      <button onclick="createEvent()" class="px-6 py-3 rounded-xl bg-primary text-white font-bold hover:bg-primary-hover transition-all cursor-pointer shadow-lg shadow-primary/20">Create Draft</button>
+    </div>
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div id="toast" class="fixed bottom-6 right-6 flex items-center gap-3 bg-white p-4 rounded-2xl shadow-xl border border-success/20 transform translate-y-20 opacity-0 transition-all duration-300 z-[110]">
+  <div class="w-10 h-10 bg-success/10 rounded-full flex items-center justify-center shrink-0">
+    <i data-lucide="check-circle" class="w-5 h-5 text-success"></i>
+  </div>
+  <div>
+    <h4 class="font-bold text-foreground text-sm">Success</h4>
+    <p class="text-secondary text-xs">Event action completed successfully.</p>
+  </div>
+</div>
+
+<script>
+  // Initialize Lucide Icons
+  lucide.createIcons();
+
+  // Sidebar Toggle
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebar.classList.contains('-translate-x-full')) {
+      sidebar.classList.remove('-translate-x-full');
+      sidebar.classList.remove('lg:translate-x-0'); // Reset desktop state
+      overlay.classList.remove('hidden');
+    } else {
+      sidebar.classList.add('-translate-x-full');
+      overlay.classList.add('hidden');
+    }
+  }
+
+  // Filter Logic
+  function filterEvents(status) {
+    // Update active chip
+    document.querySelectorAll('.filter-chip').forEach(chip => {
+      if(chip.dataset.filter === status) {
+        chip.dataset.active = "true";
+      } else {
+        chip.dataset.active = "false";
+      }
+    });
+
+    const cards = document.querySelectorAll('.event-card');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+      if (status === 'all' || card.dataset.status === status) {
+        card.style.display = 'flex';
+        visibleCount++;
+      } else {
+        card.style.display = 'none';
+      }
+    });
+
+    // Toggle Empty State
+    const emptyState = document.getElementById('empty-state');
+    if (visibleCount === 0) {
+      emptyState.classList.remove('hidden');
+      emptyState.classList.add('flex');
+    } else {
+      emptyState.classList.add('hidden');
+      emptyState.classList.remove('flex');
+    }
+  }
+
+  // Modal Functions
+  function openCreateModal() {
+    const modal = document.getElementById('create-modal');
+    const content = document.getElementById('create-modal-content');
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    // Simple animation delay
+    setTimeout(() => {
+      modal.classList.remove('opacity-0');
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  }
+
+  function closeCreateModal() {
+    const modal = document.getElementById('create-modal');
+    const content = document.getElementById('create-modal-content');
+    modal.classList.add('opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }, 300);
+  }
+
+  // Action Functions
+  function createEvent() {
+    closeCreateModal();
+    showToast('Event created as draft!');
+    // Ideally reload list or add item here
+  }
+
+  function publishEvent(btn) {
+    // Visual feedback on button
+    const originalText = btn.innerHTML;
+    btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> Publishing...`;
+    lucide.createIcons();
+    
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      showToast('Event published successfully!');
+    }, 1500);
+  }
+
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.querySelector('p').textContent = message;
+    
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    
+    setTimeout(() => {
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3000);
+  }
+
+  // Close modal on click outside
+  document.getElementById('create-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeCreateModal();
+    }
+  });
+</script>
+
+<script>
+// Fallback link handler (injected by ShaynaBuilder)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Show alert if no modal exists
+      var modal = document.getElementById('page-not-found-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        console.log('Navigation prevented: ' + this.href);
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

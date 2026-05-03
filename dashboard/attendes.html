@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventHub - Attendee Management</title>
+<meta name="description" content="Manage attendees, view ticket sales, and track check-ins for your event.">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #165DFF;
+    --primary-hover: #0E4BD9;
+    --foreground: #080C1A;
+    --secondary: #6A7686;
+    --muted: #EFF2F7;
+    --border: #F3F4F3;
+    --card-grey: #F1F3F6;
+    --success: #30B22D;
+    --success-light: #DCFCE7;
+    --success-dark: #166534;
+    --error: #ED6B60;
+    --error-light: #FEE2E2;
+    --error-dark: #991B1B;
+    --warning: #FED71F;
+    --info: #165DFF;
+    --info-light: #DBEAFE;
+    --info-dark: #1E40AF;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-success: var(--success);
+    --color-success-light: var(--success-light);
+    --color-success-dark: var(--success-dark);
+    --color-error: var(--error);
+    --color-error-light: var(--error-light);
+    --color-error-dark: var(--error-dark);
+    --color-warning: var(--warning);
+    --color-info: var(--info);
+    --color-info-light: var(--info-light);
+    --color-info-dark: var(--info-dark);
+    --font-sans: var(--font-sans);
+    --radius-card: 24px;
+    --radius-button: 50px;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+</head>
+<body class="font-sans bg-muted min-h-screen overflow-x-hidden">
+
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen max-h-screen flex-1 overflow-hidden">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="flex flex-col w-[280px] shrink-0 h-screen fixed inset-y-0 left-0 z-50 bg-white border-r border-border transform -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-hidden">
+    <!-- Top Bar -->
+    <div class="flex items-center justify-between border-b border-border h-[90px] px-5 gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-9 bg-primary rounded-xl flex items-center justify-center">
+          <i data-lucide="ticket" class="w-5 h-5 text-white"></i>
+        </div>
+        <h1 class="font-semibold text-xl">EventHub</h1>
+      </div>
+      <button onclick="toggleSidebar()" aria-label="Close sidebar" class="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="x" class="size-6 text-secondary"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="flex flex-col p-5 pb-28 gap-6 overflow-y-auto flex-1">
+      <div class="flex flex-col gap-4">
+        <h3 class="font-medium text-sm text-secondary">Organizer Menu</h3>
+        <div class="flex flex-col gap-1">
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="layout-dashboard" class="size-6 text-secondary group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-hover:text-foreground transition-all duration-300">Overview</span>
+            </div>
+          </a>
+          <a href="#" class="group active cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-muted transition-all duration-300">
+              <i data-lucide="calendar" class="size-6 text-foreground transition-all duration-300"></i>
+              <span class="font-semibold text-foreground transition-all duration-300">My Events</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="megaphone" class="size-6 text-secondary group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-hover:text-foreground transition-all duration-300">Marketing</span>
+            </div>
+          </a>
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white group-hover:bg-muted transition-all duration-300">
+              <i data-lucide="users" class="size-6 text-secondary group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-hover:text-foreground transition-all duration-300">Attendees</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Bottom User Card -->
+    <div class="absolute bottom-0 left-0 w-[280px]">
+      <div class="flex items-center justify-between border-t bg-white border-border p-5 gap-3">
+        <div class="flex items-center gap-3 min-w-0">
+          <div class="size-10 bg-primary/10 rounded-full flex items-center justify-center shrink-0">
+             <span class="font-bold text-primary">EO</span>
+          </div>
+          <div class="min-w-0">
+            <p class="font-semibold text-foreground truncate">Event Org</p>
+            <p class="text-xs text-secondary truncate">organizer@eventhub.com</p>
+          </div>
+        </div>
+        <button class="text-secondary hover:text-primary transition-colors cursor-pointer" aria-label="Logout">
+          <i data-lucide="log-out" class="size-5"></i>
+        </button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 lg:ml-[280px] flex flex-col bg-white min-h-screen overflow-x-hidden">
+    <!-- Top Header Bar -->
+    <div class="flex items-center justify-between w-full h-[90px] shrink-0 border-b border-border bg-white px-5 md:px-8">
+      <button onclick="toggleSidebar()" aria-label="Open menu" class="lg:hidden size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="menu" class="size-6 text-foreground"></i>
+      </button>
+      
+      <!-- Event Context Header -->
+      <div class="flex flex-col md:flex-row md:items-center gap-1 md:gap-4">
+        <div class="flex items-center gap-3">
+          <a href="#" class="p-2 hover:bg-muted rounded-xl transition-all cursor-pointer">
+            <i data-lucide="arrow-left" class="size-5 text-secondary"></i>
+          </a>
+          <h2 class="font-bold text-lg md:text-2xl text-foreground">Neon Dreams Festival</h2>
+        </div>
+        <div class="hidden md:flex h-6 w-px bg-border"></div>
+        <div class="flex items-center gap-2 text-secondary text-sm md:text-base">
+          <i data-lucide="calendar" class="size-4"></i>
+          <span>Aug 24 - 26, 2024</span>
+        </div>
+      </div>
+
+      <!-- Right Actions -->
+      <div class="flex items-center gap-3">
+         <button class="hidden md:flex items-center justify-center gap-2 px-4 py-2.5 ring-1 ring-border hover:ring-primary rounded-full text-foreground font-semibold transition-all duration-300 cursor-pointer" onclick="showExportToast()">
+            <i data-lucide="download" class="size-4"></i>
+            <span>Export List</span>
+         </button>
+         <button class="size-11 flex md:hidden items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+            <i data-lucide="more-vertical" class="size-6 text-secondary"></i>
+         </button>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="flex-1 overflow-y-auto p-5 md:p-8 bg-muted/30">
+      
+      <!-- Top Grid: Stats & Chart -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        
+        <!-- Left: Mini Stats -->
+        <div class="flex flex-col gap-6 lg:col-span-1">
+          <!-- Stat 1 -->
+          <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white h-full justify-center">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-[6px]">
+                <div class="size-11 bg-primary/10 rounded-xl flex items-center justify-center shrink-0">
+                  <i data-lucide="users" class="size-6 text-primary"></i>
+                </div>
+                <p class="font-medium text-secondary">Total Attendees</p>
+              </div>
+              <span class="text-success text-sm font-semibold bg-success/10 px-2 py-1 rounded-full">+12%</span>
+            </div>
+            <div class="mt-2">
+               <p class="font-bold text-[32px] leading-10">1,245</p>
+               <p class="text-sm text-secondary">Capacity: 2,500</p>
+            </div>
+          </div>
+
+          <!-- Stat 2 -->
+          <div class="flex flex-col rounded-2xl border border-border p-6 gap-3 bg-white h-full justify-center">
+            <div class="flex items-center justify-between">
+               <div class="flex items-center gap-[6px]">
+                  <div class="size-11 bg-success/10 rounded-xl flex items-center justify-center shrink-0">
+                    <i data-lucide="dollar-sign" class="size-6 text-success"></i>
+                  </div>
+                  <p class="font-medium text-secondary">Total Revenue</p>
+                </div>
+            </div>
+            <div class="mt-2">
+               <p class="font-bold text-[32px] leading-10">$84.5K</p>
+               <p class="text-sm text-secondary">Avg. ticket: $68</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Donut Chart -->
+        <div class="lg:col-span-2 rounded-2xl border border-border bg-white p-6 flex flex-col md:flex-row items-center gap-8">
+           <div class="flex-1 w-full min-w-0">
+              <h3 class="font-bold text-lg text-foreground mb-1">Ticket Sales Distribution</h3>
+              <p class="text-sm text-secondary mb-6">Breakdown by ticket tier categories</p>
+              
+              <!-- Custom Legend -->
+              <div class="grid grid-cols-2 gap-4">
+                 <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-colors">
+                    <span class="size-3 rounded-full bg-[#165DFF]"></span>
+                    <div>
+                       <p class="text-sm font-semibold text-foreground">VIP Access</p>
+                       <p class="text-xs text-secondary">150 sold (12%)</p>
+                    </div>
+                 </div>
+                 <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-colors">
+                    <span class="size-3 rounded-full bg-[#30B22D]"></span>
+                    <div>
+                       <p class="text-sm font-semibold text-foreground">Early Bird</p>
+                       <p class="text-xs text-secondary">450 sold (36%)</p>
+                    </div>
+                 </div>
+                 <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-muted transition-colors">
+                    <span class="size-3 rounded-full bg-[#FED71F]"></span>
+                    <div>
+                       <p class="text-sm font-semibold text-foreground">Regular</p>
+                       <p class="text-xs text-secondary">645 sold (52%)</p>
+                    </div>
+                 </div>
+              </div>
+           </div>
+           
+           <!-- Chart Container -->
+           <div class="w-[200px] h-[200px] shrink-0 relative">
+              <canvas id="ticketChart"></canvas>
+              <!-- Center Text Overlay -->
+              <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                 <div class="text-center">
+                    <p class="text-xs text-secondary font-medium">Total</p>
+                    <p class="text-xl font-bold text-foreground">1,245</p>
+                 </div>
+              </div>
+           </div>
+        </div>
+      </div>
+
+      <!-- Search & Filters -->
+      <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-6">
+         <h3 class="font-bold text-xl text-foreground self-start md:self-center">Attendee List</h3>
+         <div class="flex w-full md:w-auto gap-3">
+            <div class="relative w-full md:w-[300px]">
+               <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-secondary"></i>
+               <input type="text" id="searchInput" onkeyup="filterAttendees()" class="w-full h-11 pl-11 pr-4 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none font-medium transition-all duration-300 bg-white" placeholder="Search by name, email...">
+            </div>
+            <button class="h-11 px-4 ring-1 ring-border bg-white rounded-xl hover:ring-primary transition-all cursor-pointer flex items-center gap-2 text-secondary hover:text-foreground">
+               <i data-lucide="filter" class="size-5"></i>
+               <span class="hidden sm:inline">Filter</span>
+            </button>
+         </div>
+      </div>
+
+      <!-- Grouped Attendee List -->
+      <div class="flex flex-col gap-6">
+         
+         <!-- Group 1: VIP -->
+         <div class="bg-white rounded-3xl border border-border overflow-hidden">
+            <div class="flex items-center justify-between p-4 bg-muted/40 border-b border-border">
+               <div class="flex items-center gap-2">
+                  <span class="size-3 rounded-full bg-[#165DFF]"></span>
+                  <h4 class="font-bold text-foreground">VIP Access</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-xs font-bold">150</span>
+               </div>
+               <span class="text-xs text-secondary font-medium uppercase tracking-wider">Price: $150.00</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+               <table class="w-full min-w-[800px]">
+                  <thead>
+                     <tr class="border-b border-border">
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[30%]">Attendee</th>
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[15%]">Qty</th>
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[15%]">Total</th>
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[20%]">Status</th>
+                        <th class="text-right py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[20%]">Date</th>
+                     </tr>
+                  </thead>
+                  <tbody class="attendee-group">
+                     <!-- Row 1 -->
+                     <tr class="group border-b border-border hover:bg-muted/30 transition-colors">
+                        <td class="p-4">
+                           <div class="flex items-center gap-3">
+                              <div class="size-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">JD</div>
+                              <div class="min-w-0">
+                                 <p class="font-semibold text-foreground text-sm attendee-name">John Doe</p>
+                                 <p class="text-xs text-secondary truncate attendee-email">john.doe@example.com</p>
+                              </div>
+                           </div>
+                        </td>
+                        <td class="p-4 text-sm font-medium text-foreground">2</td>
+                        <td class="p-4 text-sm font-bold text-foreground">$300.00</td>
+                        <td class="p-4">
+                           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-success/10 text-success-dark text-xs font-semibold">
+                              <span class="size-1.5 rounded-full bg-success"></span> Checked In
+                           </span>
+                        </td>
+                        <td class="p-4 text-right text-sm text-secondary">Aug 24, 09:30 AM</td>
+                     </tr>
+                     <!-- Row 2 -->
+                     <tr class="group border-b border-border hover:bg-muted/30 transition-colors">
+                        <td class="p-4">
+                           <div class="flex items-center gap-3">
+                              <div class="size-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm">SW</div>
+                              <div class="min-w-0">
+                                 <p class="font-semibold text-foreground text-sm attendee-name">Sarah Wilson</p>
+                                 <p class="text-xs text-secondary truncate attendee-email">sarah.w@example.com</p>
+                              </div>
+                           </div>
+                        </td>
+                        <td class="p-4 text-sm font-medium text-foreground">1</td>
+                        <td class="p-4 text-sm font-bold text-foreground">$150.00</td>
+                        <td class="p-4">
+                           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-info-light text-info-dark text-xs font-semibold">
+                              Registered
+                           </span>
+                        </td>
+                        <td class="p-4 text-right text-sm text-secondary">Aug 23, 14:15 PM</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+
+         <!-- Group 2: Regular -->
+         <div class="bg-white rounded-3xl border border-border overflow-hidden">
+            <div class="flex items-center justify-between p-4 bg-muted/40 border-b border-border">
+               <div class="flex items-center gap-2">
+                  <span class="size-3 rounded-full bg-[#FED71F]"></span>
+                  <h4 class="font-bold text-foreground">Regular Admission</h4>
+                  <span class="px-2 py-0.5 rounded-full bg-warning/20 text-warning-dark text-xs font-bold">645</span>
+               </div>
+               <span class="text-xs text-secondary font-medium uppercase tracking-wider">Price: $65.00</span>
+            </div>
+            
+            <div class="overflow-x-auto">
+               <table class="w-full min-w-[800px]">
+                  <thead>
+                     <tr class="border-b border-border">
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[30%]">Attendee</th>
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[15%]">Qty</th>
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[15%]">Total</th>
+                        <th class="text-left py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[20%]">Status</th>
+                        <th class="text-right py-3 px-4 text-xs font-medium text-secondary uppercase tracking-wider w-[20%]">Date</th>
+                     </tr>
+                  </thead>
+                  <tbody class="attendee-group">
+                     <!-- Row 1 -->
+                     <tr class="group border-b border-border hover:bg-muted/30 transition-colors">
+                        <td class="p-4">
+                           <div class="flex items-center gap-3">
+                              <div class="size-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-sm">MJ</div>
+                              <div class="min-w-0">
+                                 <p class="font-semibold text-foreground text-sm attendee-name">Michael Jordan</p>
+                                 <p class="text-xs text-secondary truncate attendee-email">mike.j@example.com</p>
+                              </div>
+                           </div>
+                        </td>
+                        <td class="p-4 text-sm font-medium text-foreground">4</td>
+                        <td class="p-4 text-sm font-bold text-foreground">$260.00</td>
+                        <td class="p-4">
+                           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-info-light text-info-dark text-xs font-semibold">
+                              Registered
+                           </span>
+                        </td>
+                        <td class="p-4 text-right text-sm text-secondary">Aug 20, 10:00 AM</td>
+                     </tr>
+                     <!-- Row 2 -->
+                     <tr class="group border-b border-border hover:bg-muted/30 transition-colors">
+                        <td class="p-4">
+                           <div class="flex items-center gap-3">
+                              <div class="size-10 rounded-full bg-teal-100 flex items-center justify-center text-teal-600 font-bold text-sm">EL</div>
+                              <div class="min-w-0">
+                                 <p class="font-semibold text-foreground text-sm attendee-name">Emma Lee</p>
+                                 <p class="text-xs text-secondary truncate attendee-email">emma.lee@example.com</p>
+                              </div>
+                           </div>
+                        </td>
+                        <td class="p-4 text-sm font-medium text-foreground">1</td>
+                        <td class="p-4 text-sm font-bold text-foreground">$65.00</td>
+                        <td class="p-4">
+                           <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-error-light text-error-dark text-xs font-semibold">
+                              Cancelled
+                           </span>
+                        </td>
+                        <td class="p-4 text-right text-sm text-secondary">Aug 18, 09:12 AM</td>
+                     </tr>
+                  </tbody>
+               </table>
+            </div>
+         </div>
+
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- Success Toast -->
+<div id="toast" class="fixed top-5 right-5 z-[60] bg-white border border-success/20 shadow-lg rounded-2xl p-4 hidden flex items-center gap-3 transform transition-all duration-300 translate-y-[-20px] opacity-0">
+  <div class="size-10 bg-success/10 rounded-full flex items-center justify-center shrink-0">
+    <i data-lucide="check" class="size-5 text-success"></i>
+  </div>
+  <div>
+    <h4 class="font-bold text-foreground text-sm">Success</h4>
+    <p class="text-xs text-secondary">List exported successfully!</p>
+  </div>
+</div>
+
+<script>
+  // Initialize Icons
+  document.addEventListener('DOMContentLoaded', function() {
+    lucide.createIcons();
+    initChart();
+  });
+
+  function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('sidebar-overlay');
+    sidebar.classList.toggle('-translate-x-full');
+    overlay.classList.toggle('hidden');
+    document.body.classList.toggle('overflow-hidden');
+  }
+
+  function showExportToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.remove('hidden');
+    // Trigger reflow
+    void toast.offsetWidth; 
+    toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+    
+    setTimeout(() => {
+      toast.classList.add('translate-y-[-20px]', 'opacity-0');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 300);
+    }, 3000);
+  }
+
+  // Search Filter Function
+  function filterAttendees() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const rows = document.querySelectorAll('.attendee-group tr');
+
+    rows.forEach(row => {
+      const name = row.querySelector('.attendee-name').textContent.toLowerCase();
+      const email = row.querySelector('.attendee-email').textContent.toLowerCase();
+      
+      if (name.includes(filter) || email.includes(filter)) {
+        row.style.display = "";
+      } else {
+        row.style.display = "none";
+      }
+    });
+  }
+
+  // Chart JS Initialization
+  function initChart() {
+    const ctx = document.getElementById('ticketChart').getContext('2d');
+    
+    new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ['VIP Access', 'Early Bird', 'Regular'],
+        datasets: [{
+          data: [150, 450, 645],
+          backgroundColor: [
+            '#165DFF', // Primary Blue
+            '#30B22D', // Success Green
+            '#FED71F'  // Warning Yellow
+          ],
+          borderWidth: 0,
+          hoverOffset: 4
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '75%',
+        plugins: {
+          legend: {
+            display: false // Using custom legend
+          },
+          tooltip: {
+            backgroundColor: '#080C1A',
+            padding: 12,
+            cornerRadius: 8,
+            titleFont: { family: 'Lexend Deca', size: 13 },
+            bodyFont: { family: 'Lexend Deca', size: 13 },
+            callbacks: {
+               label: function(context) {
+                  return ' ' + context.label + ': ' + context.raw;
+               }
+            }
+          }
+        }
+      }
+    });
+  }
+</script>
+
+<script>
+// Fallback link handler (injected by ShaynaBuilder)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Show alert if no modal exists
+      var modal = document.getElementById('page-not-found-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        console.log('Navigation prevented: ' + this.href);
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

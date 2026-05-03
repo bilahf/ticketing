@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Event - EventHub</title>
+<meta name="description" content="Create or edit your event details, ticket tiers, and publish to EventHub.">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js" onload="window.lucideLoaded=true; if(window.initLucide) window.initLucide();"></script>
+<script>
+  window.initLucide = function() { if(window.lucide) lucide.createIcons(); };
+  document.addEventListener('DOMContentLoaded', function() { if(window.lucideLoaded) window.initLucide(); });
+</script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #165DFF;
+    --primary-hover: #0E4BD9;
+    --foreground: #080C1A;
+    --secondary: #6A7686;
+    --muted: #EFF2F7;
+    --border: #F3F4F3;
+    --card-grey: #F1F3F6;
+    --card-message: #C9E6FC;
+    --success: #30B22D;
+    --success-light: #DCFCE7;
+    --error: #ED6B60;
+    --error-light: #FEE2E2;
+    --warning: #FED71F;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-success: var(--success);
+    --color-error: var(--error);
+    --color-warning: var(--warning);
+    --font-sans: var(--font-sans);
+    --radius-card: 24px;
+    --radius-button: 50px;
+  }
+  .step-active { @apply border-primary text-primary; }
+  .step-completed { @apply border-success text-success; }
+  .step-inactive { @apply border-gray-200 text-secondary; }
+  
+  /* Custom file input */
+  input[type="file"]::file-selector-button {
+    display: none;
+  }
+</style>
+</head>
+<body class="font-sans bg-muted min-h-screen overflow-x-hidden">
+
+<!-- Mobile Overlay -->
+<div id="sidebar-overlay" class="fixed inset-0 bg-black/80 z-40 lg:hidden hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen max-h-screen flex-1 overflow-hidden">
+  <!-- SIDEBAR -->
+  <aside id="sidebar" class="flex flex-col w-[280px] shrink-0 h-screen fixed inset-y-0 left-0 z-50 bg-white border-r border-border transform -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-hidden">
+    <!-- Top Bar with logo -->
+    <div class="flex items-center justify-between border-b border-border h-[90px] px-5 gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-9 bg-primary rounded-xl flex items-center justify-center">
+          <i data-lucide="calendar-heart" class="w-5 h-5 text-white"></i>
+        </div>
+        <h1 class="font-semibold text-xl tracking-tight">EventHub</h1>
+      </div>
+      <button onclick="toggleSidebar()" aria-label="Close sidebar" class="lg:hidden size-11 flex shrink-0 bg-white rounded-xl p-[10px] items-center justify-center ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+        <i data-lucide="x" class="size-6 text-secondary"></i>
+      </button>
+    </div>
+
+    <!-- Navigation Menu -->
+    <div class="flex flex-col p-5 gap-6 overflow-y-auto flex-1">
+      <div class="flex flex-col gap-4">
+        <h3 class="font-medium text-sm text-secondary px-2">Menu</h3>
+        <div class="flex flex-col gap-1">
+          <a href="#" class="group cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-white hover:bg-muted transition-all duration-300">
+              <i data-lucide="layout-dashboard" class="size-6 text-secondary group-hover:text-foreground transition-all duration-300"></i>
+              <span class="font-medium text-secondary group-hover:text-foreground transition-all duration-300">Overview</span>
+            </div>
+          </a>
+          <a href="#" class="group active cursor-pointer">
+            <div class="flex items-center rounded-xl p-4 gap-3 bg-muted group-[.active]:bg-primary/10 transition-all duration-300">
+              <i data-lucide="calendar" class="size-6 text-primary transition-all duration-300"></i>
+              <span class="font-semibold text-primary transition-all duration-300">My Events</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Help Card -->
+    <div class="p-5 mt-auto">
+      <div class="flex items-center gap-3 p-4 rounded-2xl bg-card-grey">
+        <div class="size-10 rounded-full bg-white flex items-center justify-center shrink-0">
+          <i data-lucide="life-buoy" class="size-5 text-secondary"></i>
+        </div>
+        <div>
+          <p class="font-semibold text-sm">Need Help?</p>
+          <p class="text-xs text-secondary">Check our docs</p>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="flex-1 lg:ml-[280px] flex flex-col bg-muted min-h-screen overflow-x-hidden">
+    <!-- Top Header Bar -->
+    <div class="flex items-center justify-between w-full h-[90px] shrink-0 border-b border-border bg-white px-5 md:px-8 sticky top-0 z-30">
+      <div class="flex items-center gap-4">
+        <button onclick="toggleSidebar()" aria-label="Open menu" class="lg:hidden size-11 flex items-center justify-center rounded-xl ring-1 ring-border hover:ring-primary transition-all duration-300 cursor-pointer">
+          <i data-lucide="menu" class="size-6 text-foreground"></i>
+        </button>
+        <h2 class="font-bold text-2xl text-foreground">Create Event</h2>
+      </div>
+      
+      <!-- Right actions -->
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-3 pl-3 border-l border-border">
+          <div class="text-right">
+            <p class="font-semibold text-foreground text-sm">Organizer</p>
+            <p class="text-secondary text-xs">Pro Account</p>
+          </div>
+          <img src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=100&h=100&fit=crop" alt="Profile" class="size-11 rounded-full object-cover ring-2 ring-border">
+        </div>
+      </div>
+    </div>
+
+    <!-- Page Content -->
+    <div class="flex-1 overflow-y-auto p-5 md:p-8">
+      
+      <!-- STEPPER NAVIGATION -->
+      <div class="max-w-4xl mx-auto mb-8">
+        <div class="flex items-center justify-between relative">
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 w-full h-1 bg-gray-200 -z-10"></div>
+          <div class="absolute left-0 top-1/2 -translate-y-1/2 h-1 bg-primary transition-all duration-500 -z-10" style="width: 0%" id="progress-bar"></div>
+          
+          <!-- Step 1 -->
+          <div class="flex flex-col items-center gap-2 bg-muted px-2 z-10 cursor-pointer" onclick="goToStep(1)">
+            <div id="step-circle-1" class="size-10 rounded-full border-2 border-primary bg-primary text-white flex items-center justify-center font-bold transition-all duration-300">1</div>
+            <span id="step-text-1" class="text-sm font-semibold text-primary">Details</span>
+          </div>
+          
+          <!-- Step 2 -->
+          <div class="flex flex-col items-center gap-2 bg-muted px-2 z-10 cursor-pointer" onclick="goToStep(2)">
+            <div id="step-circle-2" class="size-10 rounded-full border-2 border-gray-200 bg-white text-secondary flex items-center justify-center font-bold transition-all duration-300">2</div>
+            <span id="step-text-2" class="text-sm font-medium text-secondary">Tickets</span>
+          </div>
+          
+          <!-- Step 3 -->
+          <div class="flex flex-col items-center gap-2 bg-muted px-2 z-10 cursor-pointer" onclick="goToStep(3)">
+            <div id="step-circle-3" class="size-10 rounded-full border-2 border-gray-200 bg-white text-secondary flex items-center justify-center font-bold transition-all duration-300">3</div>
+            <span id="step-text-3" class="text-sm font-medium text-secondary">Preview</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FORM STEPS CONTAINER -->
+      <div class="max-w-4xl mx-auto bg-white rounded-3xl p-6 md:p-8 ring-1 ring-border shadow-sm">
+        
+        <!-- STEP 1: EVENT DETAILS -->
+        <div id="step-1" class="flex flex-col gap-6 animate-fade-in">
+          <div class="flex items-center gap-3 border-b border-border pb-4">
+            <div class="size-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <i data-lucide="file-text" class="size-5 text-primary"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-foreground">Basic Information</h3>
+              <p class="text-secondary text-sm">Fill in the details about your event</p>
+            </div>
+          </div>
+
+          <!-- Cover Image Upload -->
+          <div class="flex flex-col gap-2">
+            <label class="font-semibold text-foreground text-sm">Event Cover Image</label>
+            <div class="relative w-full h-[240px] rounded-2xl border-2 border-dashed border-border bg-gray-50 flex flex-col items-center justify-center cursor-pointer hover:bg-gray-100 hover:border-primary transition-all duration-300 group overflow-hidden" id="drop-zone">
+              <input type="file" id="cover-upload" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20" onchange="previewCover(this)">
+              
+              <!-- Placeholder State -->
+              <div id="upload-placeholder" class="flex flex-col items-center gap-3 transition-opacity duration-300">
+                <div class="size-14 bg-white rounded-full shadow-sm flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <i data-lucide="image-plus" class="size-6 text-primary"></i>
+                </div>
+                <div class="text-center">
+                  <p class="font-medium text-foreground">Click or drop image here</p>
+                  <p class="text-xs text-secondary mt-1">Recommended: 1200x600px (JPG, PNG)</p>
+                </div>
+              </div>
+
+              <!-- Preview State -->
+              <img id="cover-preview" src="" class="absolute inset-0 w-full h-full object-cover hidden z-10" alt="Cover Preview">
+              <button id="remove-cover" onclick="removeCover(event)" class="absolute top-4 right-4 z-30 size-9 bg-white/90 backdrop-blur rounded-full flex items-center justify-center shadow-sm hover:bg-white text-error hidden transition-all" type="button">
+                <i data-lucide="trash-2" class="size-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Title & Category -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+              <label for="event-title" class="font-semibold text-foreground text-sm">Event Title</label>
+              <input type="text" id="event-title" placeholder="e.g. Jakarta Tech Conference 2024" class="w-full h-12 px-4 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none transition-all font-medium">
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="event-category" class="font-semibold text-foreground text-sm">Category</label>
+              <div class="relative">
+                <select id="event-category" class="w-full h-12 px-4 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none transition-all font-medium bg-white appearance-none">
+                  <option value="" disabled selected>Select category</option>
+                  <option value="Music">Music Concert</option>
+                  <option value="Workshop">Workshop & Training</option>
+                  <option value="Conference">Conference</option>
+                  <option value="Exhibition">Exhibition</option>
+                  <option value="Sports">Sports</option>
+                </select>
+                <i data-lucide="chevron-down" class="absolute right-4 top-1/2 -translate-y-1/2 size-5 text-secondary pointer-events-none"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="flex flex-col gap-2">
+            <label for="event-desc" class="font-semibold text-foreground text-sm">Description</label>
+            <textarea id="event-desc" rows="4" placeholder="Tell people what your event is about..." class="w-full p-4 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none transition-all font-medium resize-none"></textarea>
+          </div>
+
+          <!-- Date & Location -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="flex flex-col gap-2">
+              <label for="event-date" class="font-semibold text-foreground text-sm">Start Date & Time</label>
+              <input type="datetime-local" id="event-date" class="w-full h-12 px-4 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none transition-all font-medium text-secondary">
+            </div>
+            <div class="flex flex-col gap-2">
+              <label for="event-location" class="font-semibold text-foreground text-sm">Location / Venue</label>
+              <div class="relative">
+                <i data-lucide="map-pin" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-secondary"></i>
+                <input type="text" id="event-location" placeholder="e.g. GBK Stadium" class="w-full h-12 pl-12 pr-4 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none transition-all font-medium">
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 1 Footer -->
+          <div class="flex justify-end pt-6 border-t border-border mt-2">
+            <button onclick="validateAndNext(1)" class="px-8 py-3 bg-primary hover:bg-primary-hover text-white rounded-full font-bold transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2 cursor-pointer">
+              <span>Next Step</span>
+              <i data-lucide="arrow-right" class="size-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 2: TICKET TIERS -->
+        <div id="step-2" class="hidden flex-col gap-6 animate-fade-in">
+          <div class="flex items-center gap-3 border-b border-border pb-4">
+            <div class="size-10 bg-primary/10 rounded-xl flex items-center justify-center">
+              <i data-lucide="ticket" class="size-5 text-primary"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-foreground">Ticket Tiers</h3>
+              <p class="text-secondary text-sm">Create at least 1 ticket tier (Max 5)</p>
+            </div>
+          </div>
+
+          <!-- Ticket Tiers Container -->
+          <div id="tiers-container" class="flex flex-col gap-4">
+            <!-- Initial Tier Card (will be generated by JS, but keeping one for structure) -->
+          </div>
+
+          <!-- Add Tier Button -->
+          <button id="add-tier-btn" onclick="addTier()" class="w-full py-4 border-2 border-dashed border-border rounded-2xl flex items-center justify-center gap-2 text-secondary font-semibold hover:border-primary hover:text-primary hover:bg-primary/5 transition-all cursor-pointer group">
+            <div class="size-8 rounded-full bg-border group-hover:bg-primary group-hover:text-white flex items-center justify-center transition-all">
+              <i data-lucide="plus" class="size-5"></i>
+            </div>
+            <span>Add Another Ticket Tier</span>
+          </button>
+          <p id="tier-limit-msg" class="text-xs text-center text-secondary hidden">Maximum 5 tiers reached</p>
+
+          <!-- Step 2 Footer -->
+          <div class="flex justify-between pt-6 border-t border-border mt-4">
+            <button onclick="goToStep(1)" class="px-6 py-3 text-secondary font-semibold hover:text-foreground transition-all flex items-center gap-2 cursor-pointer">
+              <i data-lucide="arrow-left" class="size-5"></i>
+              <span>Back</span>
+            </button>
+            <button onclick="validateAndNext(2)" class="px-8 py-3 bg-primary hover:bg-primary-hover text-white rounded-full font-bold transition-all shadow-lg hover:shadow-primary/25 flex items-center gap-2 cursor-pointer">
+              <span>Preview Event</span>
+              <i data-lucide="eye" class="size-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- STEP 3: PREVIEW & PUBLISH -->
+        <div id="step-3" class="hidden flex-col gap-6 animate-fade-in">
+          <div class="flex items-center gap-3 border-b border-border pb-4">
+            <div class="size-10 bg-success/10 rounded-xl flex items-center justify-center">
+              <i data-lucide="check-circle-2" class="size-5 text-success"></i>
+            </div>
+            <div>
+              <h3 class="font-bold text-lg text-foreground">Review & Publish</h3>
+              <p class="text-secondary text-sm">Double check your event details before publishing</p>
+            </div>
+          </div>
+
+          <!-- Preview Card -->
+          <div class="border border-border rounded-2xl overflow-hidden bg-white">
+            <!-- Preview Cover -->
+            <div class="h-48 w-full bg-gray-100 relative">
+              <img id="preview-cover-img" src="" class="w-full h-full object-cover hidden">
+              <div id="preview-no-img" class="absolute inset-0 flex items-center justify-center text-secondary bg-gray-50">
+                <span class="flex items-center gap-2"><i data-lucide="image-off" class="size-5"></i> No Cover Image</span>
+              </div>
+              <div class="absolute top-4 left-4">
+                <span id="preview-category" class="px-3 py-1 bg-white/90 backdrop-blur rounded-full text-xs font-bold text-primary shadow-sm">Category</span>
+              </div>
+            </div>
+
+            <div class="p-6 flex flex-col gap-6">
+              <!-- Event Header -->
+              <div class="flex flex-col gap-2">
+                <h2 id="preview-title" class="text-2xl font-bold text-foreground">Event Title Placeholder</h2>
+                <div class="flex flex-wrap gap-4 text-sm text-secondary mt-1">
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="calendar" class="size-4 text-primary"></i>
+                    <span id="preview-date">Date Placeholder</span>
+                  </div>
+                  <div class="flex items-center gap-1.5">
+                    <i data-lucide="map-pin" class="size-4 text-primary"></i>
+                    <span id="preview-location">Location Placeholder</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Description -->
+              <div class="bg-muted/50 p-4 rounded-xl">
+                <h4 class="font-semibold text-sm mb-2 text-foreground">About this event</h4>
+                <p id="preview-desc" class="text-sm text-secondary leading-relaxed line-clamp-3">Description placeholder...</p>
+              </div>
+
+              <!-- Tickets List -->
+              <div>
+                <h4 class="font-semibold text-sm mb-3 text-foreground">Ticket Tiers</h4>
+                <div id="preview-tickets-list" class="flex flex-col gap-3">
+                  <!-- Generated by JS -->
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 Footer Actions -->
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-border mt-2">
+            <button onclick="goToStep(2)" class="order-2 sm:order-1 px-6 py-3 text-secondary font-semibold hover:text-foreground transition-all flex items-center gap-2 cursor-pointer w-full sm:w-auto justify-center sm:justify-start">
+              <i data-lucide="arrow-left" class="size-5"></i>
+              <span>Back to Edit</span>
+            </button>
+            <div class="order-1 sm:order-2 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <button onclick="saveDraft()" class="px-6 py-3 rounded-full border border-border text-foreground font-semibold hover:bg-gray-50 transition-all cursor-pointer">
+                Save as Draft
+              </button>
+              <button onclick="publishEvent()" class="px-8 py-3 bg-primary hover:bg-primary-hover text-white rounded-full font-bold transition-all shadow-lg hover:shadow-primary/25 cursor-pointer flex items-center justify-center gap-2">
+                <span>Publish Event</span>
+                <i data-lucide="rocket" class="size-5"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Success Modal -->
+<div id="success-modal" class="fixed inset-0 bg-black/50 z-[100] hidden items-center justify-center p-4">
+  <div class="bg-white rounded-3xl p-8 max-w-sm w-full text-center transform transition-all scale-100">
+    <div class="w-20 h-20 bg-success/10 rounded-full flex items-center justify-center mx-auto mb-6">
+      <i data-lucide="check" class="w-10 h-10 text-success"></i>
+    </div>
+    <h3 class="text-foreground text-2xl font-bold mb-2">Event Published!</h3>
+    <p class="text-secondary text-sm mb-8">Your event has been successfully published and is now live for attendees.</p>
+    <button onclick="window.location.reload()" class="w-full px-6 py-3.5 bg-primary text-white rounded-full font-bold hover:bg-primary-hover transition-all cursor-pointer">
+      Back to Dashboard
+    </button>
+  </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="fixed bottom-5 right-5 z-[110] transform transition-all duration-300 translate-y-24 opacity-0">
+  <div class="bg-foreground text-white px-6 py-4 rounded-xl shadow-2xl flex items-center gap-3 min-w-[300px]">
+    <i id="toast-icon" data-lucide="info" class="size-5 text-primary"></i>
+    <p id="toast-message" class="font-medium text-sm">Notification message</p>
+  </div>
+</div>
+
+<script>
+// State Management
+let currentStep = 1;
+let tierCount = 0;
+const MAX_TIERS = 5;
+
+// Initialize
+document.addEventListener('DOMContentLoaded', function() {
+  lucide.createIcons();
+  
+  // Add initial ticket tier
+  addTier();
+  
+  // Set initial step UI
+  updateStepperUI(1);
+});
+
+// Sidebar Toggle
+function toggleSidebar() {
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebar-overlay');
+  sidebar.classList.toggle('-translate-x-full');
+  overlay.classList.toggle('hidden');
+  document.body.classList.toggle('overflow-hidden');
+}
+
+// Stepper Navigation
+function goToStep(step) {
+  // Validate step 1 before going to 2 or 3
+  if (step > 1 && !validateStep1(false)) {
+    showToast('Please complete Step 1 details first', 'error');
+    return;
+  }
+  // Validate step 2 before going to 3
+  if (step > 2 && !validateStep2(false)) {
+    showToast('Please add at least one valid ticket tier', 'error');
+    return;
+  }
+
+  // Update State
+  currentStep = step;
+  
+  // Update Content Visibility
+  document.getElementById('step-1').classList.add('hidden');
+  document.getElementById('step-2').classList.add('hidden');
+  document.getElementById('step-3').classList.add('hidden');
+  
+  const targetStep = document.getElementById(`step-${step}`);
+  targetStep.classList.remove('hidden');
+  
+  // Update UI & Progress Bar
+  updateStepperUI(step);
+  
+  // If moving to preview, generate it
+  if (step === 3) generatePreview();
+}
+
+function updateStepperUI(activeStep) {
+  // Progress Bar Width
+  const progress = ((activeStep - 1) / 2) * 100; // 0%, 50%, 100%
+  document.getElementById('progress-bar').style.width = `${progress}%`;
+
+  // Circles and Text Styles
+  for (let i = 1; i <= 3; i++) {
+    const circle = document.getElementById(`step-circle-${i}`);
+    const text = document.getElementById(`step-text-${i}`);
+    
+    // Reset classes
+    circle.className = 'size-10 rounded-full border-2 flex items-center justify-center font-bold transition-all duration-300';
+    text.className = 'text-sm font-medium transition-all duration-300';
+
+    if (i < activeStep) {
+      // Completed Step
+      circle.classList.add('bg-success', 'border-success', 'text-white');
+      circle.innerHTML = '<i data-lucide="check" class="size-5"></i>';
+      text.classList.add('text-success');
+    } else if (i === activeStep) {
+      // Active Step
+      circle.classList.add('bg-primary', 'border-primary', 'text-white');
+      circle.textContent = i;
+      text.classList.add('text-primary', 'font-bold');
+    } else {
+      // Inactive Step
+      circle.classList.add('bg-white', 'border-gray-200', 'text-secondary');
+      circle.textContent = i;
+      text.classList.add('text-secondary');
+    }
+  }
+  lucide.createIcons();
+}
+
+// Form Validation Handlers
+function validateAndNext(current) {
+  if (current === 1) {
+    if (validateStep1(true)) goToStep(2);
+  } else if (current === 2) {
+    if (validateStep2(true)) goToStep(3);
+  }
+}
+
+function validateStep1(showError) {
+  const title = document.getElementById('event-title').value.trim();
+  const category = document.getElementById('event-category').value;
+  const date = document.getElementById('event-date').value;
+  const location = document.getElementById('event-location').value;
+  
+  if (!title || !category || !date || !location) {
+    if (showError) showToast('Please fill in all required fields', 'error');
+    return false;
+  }
+  return true;
+}
+
+function validateStep2(showError) {
+  const tiers = document.querySelectorAll('.tier-card');
+  if (tiers.length === 0) {
+    if (showError) showToast('Add at least one ticket tier', 'error');
+    return false;
+  }
+  
+  let isValid = true;
+  tiers.forEach(tier => {
+    const name = tier.querySelector('.tier-name').value.trim();
+    const price = tier.querySelector('.tier-price').value.trim();
+    const quota = tier.querySelector('.tier-quota').value.trim();
+    
+    if (!name || !price || !quota) isValid = false;
+  });
+
+  if (!isValid && showError) {
+    showToast('Please complete all ticket tier fields', 'error');
+  }
+  return isValid;
+}
+
+// Cover Image Logic
+function previewCover(input) {
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('cover-preview').src = e.target.result;
+      document.getElementById('cover-preview').classList.remove('hidden');
+      document.getElementById('upload-placeholder').classList.add('opacity-0');
+      document.getElementById('remove-cover').classList.remove('hidden');
+      document.getElementById('remove-cover').classList.add('flex');
+    }
+    reader.readAsDataURL(input.files[0]);
+  }
+}
+
+function removeCover(e) {
+  e.preventDefault();
+  e.stopPropagation();
+  document.getElementById('cover-upload').value = '';
+  document.getElementById('cover-preview').src = '';
+  document.getElementById('cover-preview').classList.add('hidden');
+  document.getElementById('upload-placeholder').classList.remove('opacity-0');
+  document.getElementById('remove-cover').classList.add('hidden');
+  document.getElementById('remove-cover').classList.remove('flex');
+}
+
+// Ticket Tier Logic
+function addTier() {
+  if (tierCount >= MAX_TIERS) return;
+
+  tierCount++;
+  const id = Date.now();
+  const container = document.getElementById('tiers-container');
+  
+  const tierHTML = `
+    <div class="tier-card relative bg-white border border-border rounded-2xl p-5 shadow-sm hover:border-primary/50 transition-all duration-300 group" id="tier-${id}">
+      <div class="flex items-center justify-between mb-4">
+        <span class="text-xs font-bold text-primary bg-primary/10 px-2 py-1 rounded-md uppercase tracking-wide">Tier ${tierCount}</span>
+        <button onclick="removeTier(${id})" class="text-secondary hover:text-error transition-colors cursor-pointer p-1 rounded-md hover:bg-error/10" title="Remove Tier">
+          <i data-lucide="trash-2" class="size-4"></i>
+        </button>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex flex-col gap-1.5 md:col-span-3 lg:col-span-1">
+          <label class="text-xs font-semibold text-secondary">Ticket Name</label>
+          <input type="text" placeholder="e.g. Early Bird" class="tier-name w-full h-10 px-3 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none text-sm font-medium">
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-secondary">Price (IDR)</label>
+          <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary text-sm font-medium">Rp</span>
+            <input type="number" placeholder="0" class="tier-price w-full h-10 pl-9 pr-3 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none text-sm font-medium">
+          </div>
+        </div>
+        <div class="flex flex-col gap-1.5">
+          <label class="text-xs font-semibold text-secondary">Quota</label>
+          <input type="number" placeholder="100" class="tier-quota w-full h-10 px-3 rounded-xl ring-1 ring-border focus:ring-2 focus:ring-primary outline-none text-sm font-medium">
+        </div>
+      </div>
+    </div>
+  `;
+  
+  container.insertAdjacentHTML('beforeend', tierHTML);
+  lucide.createIcons();
+  checkTierLimit();
+}
+
+function removeTier(id) {
+  const tiers = document.querySelectorAll('.tier-card');
+  if (tiers.length <= 1) {
+    showToast('You must have at least one ticket tier', 'error');
+    return;
+  }
+  
+  document.getElementById(`tier-${id}`).remove();
+  tierCount--;
+  checkTierLimit();
+  
+  // Renumber tiers visual label
+  document.querySelectorAll('.tier-card').forEach((card, index) => {
+    card.querySelector('span').textContent = `TIER ${index + 1}`;
+  });
+}
+
+function checkTierLimit() {
+  const btn = document.getElementById('add-tier-btn');
+  const msg = document.getElementById('tier-limit-msg');
+  
+  if (tierCount >= MAX_TIERS) {
+    btn.classList.add('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+    msg.classList.remove('hidden');
+  } else {
+    btn.classList.remove('opacity-50', 'cursor-not-allowed', 'pointer-events-none');
+    msg.classList.add('hidden');
+  }
+}
+
+// Preview Generation
+function generatePreview() {
+  // Basic Info
+  document.getElementById('preview-title').textContent = document.getElementById('event-title').value || 'Untitled Event';
+  document.getElementById('preview-category').textContent = document.getElementById('event-category').value || 'Uncategorized';
+  document.getElementById('preview-desc').textContent = document.getElementById('event-desc').value || 'No description provided.';
+  
+  const dateVal = document.getElementById('event-date').value;
+  document.getElementById('preview-date').textContent = dateVal ? new Date(dateVal).toLocaleString() : 'Date TBA';
+  document.getElementById('preview-location').textContent = document.getElementById('event-location').value || 'Location TBA';
+  
+  // Image
+  const previewImg = document.getElementById('preview-cover-img');
+  const uploadedSrc = document.getElementById('cover-preview').src;
+  const noImg = document.getElementById('preview-no-img');
+  
+  if (uploadedSrc && !document.getElementById('cover-preview').classList.contains('hidden')) {
+    previewImg.src = uploadedSrc;
+    previewImg.classList.remove('hidden');
+    noImg.classList.add('hidden');
+  } else {
+    previewImg.classList.add('hidden');
+    noImg.classList.remove('hidden');
+  }
+  
+  // Tickets
+  const listContainer = document.getElementById('preview-tickets-list');
+  listContainer.innerHTML = '';
+  
+  document.querySelectorAll('.tier-card').forEach(tier => {
+    const name = tier.querySelector('.tier-name').value || 'Unnamed Ticket';
+    const price = tier.querySelector('.tier-price').value || '0';
+    const quota = tier.querySelector('.tier-quota').value || '0';
+    
+    const item = `
+      <div class="flex items-center justify-between p-4 rounded-xl border border-border bg-gray-50">
+        <div class="flex flex-col">
+          <span class="font-bold text-foreground text-sm">${name}</span>
+          <span class="text-xs text-secondary">${quota} available</span>
+        </div>
+        <span class="font-bold text-primary">Rp ${parseInt(price).toLocaleString()}</span>
+      </div>
+    `;
+    listContainer.insertAdjacentHTML('beforeend', item);
+  });
+}
+
+// Publish Actions
+function saveDraft() {
+  showToast('Event saved as draft successfully!', 'success');
+}
+
+function publishEvent() {
+  const modal = document.getElementById('success-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+
+// Toast System
+function showToast(message, type = 'info') {
+  const toast = document.getElementById('toast');
+  const msg = document.getElementById('toast-message');
+  const icon = document.getElementById('toast-icon');
+  
+  msg.textContent = message;
+  
+  if (type === 'success') {
+    icon.setAttribute('data-lucide', 'check-circle');
+    icon.classList.remove('text-error', 'text-primary');
+    icon.classList.add('text-success');
+  } else if (type === 'error') {
+    icon.setAttribute('data-lucide', 'alert-circle');
+    icon.classList.remove('text-success', 'text-primary');
+    icon.classList.add('text-error');
+  } else {
+    icon.setAttribute('data-lucide', 'info');
+    icon.classList.remove('text-success', 'text-error');
+    icon.classList.add('text-primary');
+  }
+  
+  lucide.createIcons();
+  
+  toast.classList.remove('translate-y-24', 'opacity-0');
+  
+  setTimeout(() => {
+    toast.classList.add('translate-y-24', 'opacity-0');
+  }, 3000);
+}
+</script>
+
+<script>
+// Fallback link handler (injected by ShaynaBuilder)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Show alert if no modal exists
+      var modal = document.getElementById('page-not-found-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        console.log('Navigation prevented: ' + this.href);
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

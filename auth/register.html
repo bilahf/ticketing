@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventHub - Register</title>
+<meta name="description" content="Create your EventHub account to organize or attend events.">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #165DFF;
+    --primary-hover: #0E4BD9;
+    --foreground: #080C1A;
+    --secondary: #6A7686;
+    --muted: #EFF2F7;
+    --border: #F3F4F3;
+    --card-grey: #F1F3F6;
+    --success: #30B22D;
+    --error: #ED6B60;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-success: var(--success);
+    --color-error: var(--error);
+    --font-sans: var(--font-sans);
+    --radius-xl: 12px;
+    --radius-2xl: 16px;
+    --radius-3xl: 24px;
+  }
+  .role-card.selected {
+    @apply ring-2 ring-primary bg-primary/5;
+  }
+  .role-card.selected .check-icon {
+    @apply opacity-100 scale-100;
+  }
+</style>
+</head>
+<body class="font-sans bg-muted min-h-screen flex items-center justify-center p-4">
+
+<!-- Main Card -->
+<div class="w-full max-w-[520px] bg-white rounded-3xl shadow-xl overflow-hidden ring-1 ring-border">
+  <div class="p-8 md:p-10 flex flex-col gap-8">
+    
+    <!-- Header -->
+    <div class="text-center flex flex-col items-center gap-3">
+      <div class="size-14 bg-primary rounded-2xl flex items-center justify-center mb-2 shadow-lg shadow-primary/30">
+        <i data-lucide="calendar-heart" class="size-7 text-white"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-foreground">Create Account</h1>
+        <p class="text-secondary mt-1">Join EventHub to explore amazing events</p>
+      </div>
+    </div>
+
+    <!-- Form -->
+    <form onsubmit="handleRegister(event)" class="flex flex-col gap-5">
+      
+      <!-- Role Selection -->
+      <div class="flex flex-col gap-2">
+        <label class="text-sm font-semibold text-foreground ml-1">I want to...</label>
+        <div class="grid grid-cols-2 gap-3">
+          <!-- Organizer Option -->
+          <div onclick="selectRole('organizer')" id="role-organizer" class="role-card cursor-pointer relative group p-4 rounded-2xl border border-border hover:border-primary transition-all duration-300 bg-white">
+            <div class="absolute top-3 right-3 check-icon opacity-0 scale-50 transition-all duration-300">
+              <div class="size-5 bg-primary rounded-full flex items-center justify-center">
+                <i data-lucide="check" class="size-3 text-white"></i>
+              </div>
+            </div>
+            <div class="flex flex-col items-center gap-2 text-center">
+              <div class="size-10 rounded-full bg-blue-50 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                <i data-lucide="briefcase" class="size-5"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm text-foreground">Organize</p>
+                <p class="text-xs text-secondary mt-0.5">Create Events</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Attendee Option -->
+          <div onclick="selectRole('attendee')" id="role-attendee" class="role-card cursor-pointer relative group p-4 rounded-2xl border border-border hover:border-primary transition-all duration-300 bg-white selected">
+            <div class="absolute top-3 right-3 check-icon opacity-0 scale-50 transition-all duration-300">
+              <div class="size-5 bg-primary rounded-full flex items-center justify-center">
+                <i data-lucide="check" class="size-3 text-white"></i>
+              </div>
+            </div>
+            <div class="flex flex-col items-center gap-2 text-center">
+              <div class="size-10 rounded-full bg-orange-50 text-orange-500 flex items-center justify-center group-hover:bg-orange-500 group-hover:text-white transition-colors duration-300">
+                <i data-lucide="party-popper" class="size-5"></i>
+              </div>
+              <div>
+                <p class="font-bold text-sm text-foreground">Attend</p>
+                <p class="text-xs text-secondary mt-0.5">Find Events</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" id="inputRole" value="attendee">
+      </div>
+
+      <!-- Full Name -->
+      <div class="relative h-[56px] rounded-2xl ring-1 ring-border focus-within:ring-2 focus-within:ring-primary transition-all duration-300 bg-white">
+        <i data-lucide="user" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-secondary"></i>
+        <input required id="inputName" type="text" class="peer absolute inset-0 w-full h-full bg-transparent text-foreground font-medium focus:outline-none pl-12 pr-4 pt-4 pb-1" placeholder=" ">
+        <label for="inputName" class="absolute left-12 text-secondary text-xs font-medium transition-all duration-200 top-2 peer-placeholder-shown:top-[18px] peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs pointer-events-none">Full Name</label>
+      </div>
+
+      <!-- Email -->
+      <div class="relative h-[56px] rounded-2xl ring-1 ring-border focus-within:ring-2 focus-within:ring-primary transition-all duration-300 bg-white">
+        <i data-lucide="mail" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-secondary"></i>
+        <input required id="inputEmail" type="email" class="peer absolute inset-0 w-full h-full bg-transparent text-foreground font-medium focus:outline-none pl-12 pr-4 pt-4 pb-1" placeholder=" ">
+        <label for="inputEmail" class="absolute left-12 text-secondary text-xs font-medium transition-all duration-200 top-2 peer-placeholder-shown:top-[18px] peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs pointer-events-none">Email Address</label>
+      </div>
+
+      <!-- Password -->
+      <div class="relative h-[56px] rounded-2xl ring-1 ring-border focus-within:ring-2 focus-within:ring-primary transition-all duration-300 bg-white">
+        <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 size-5 text-secondary"></i>
+        <input required id="inputPassword" type="password" class="peer absolute inset-0 w-full h-full bg-transparent text-foreground font-medium focus:outline-none pl-12 pr-12 pt-4 pb-1" placeholder=" ">
+        <label for="inputPassword" class="absolute left-12 text-secondary text-xs font-medium transition-all duration-200 top-2 peer-placeholder-shown:top-[18px] peer-placeholder-shown:text-sm peer-focus:top-2 peer-focus:text-xs pointer-events-none">Password</label>
+        <button type="button" onclick="togglePassword()" class="absolute right-4 top-1/2 -translate-y-1/2 text-secondary hover:text-foreground cursor-pointer transition-colors">
+          <i id="eyeIcon" data-lucide="eye" class="size-5"></i>
+        </button>
+      </div>
+
+      <!-- Terms Checkbox -->
+      <label class="flex items-start gap-3 cursor-pointer group">
+        <div class="relative flex items-center mt-0.5">
+          <input type="checkbox" required class="peer size-5 appearance-none rounded-md border border-gray-300 checked:bg-primary checked:border-primary transition-all cursor-pointer">
+          <i data-lucide="check" class="absolute inset-0 m-auto size-3.5 text-white opacity-0 peer-checked:opacity-100 transition-opacity pointer-events-none"></i>
+        </div>
+        <span class="text-sm text-secondary leading-snug group-hover:text-foreground transition-colors">
+          I agree to the <a href="#" class="text-primary font-semibold hover:underline">Terms of Service</a> and <a href="#" class="text-primary font-semibold hover:underline">Privacy Policy</a>
+        </span>
+      </label>
+
+      <!-- Submit Button -->
+      <button type="submit" class="mt-2 w-full bg-primary hover:bg-primary-hover text-white rounded-full py-3.5 font-bold text-lg transition-all duration-300 shadow-lg shadow-primary/20 hover:shadow-primary/40 active:scale-[0.98] cursor-pointer">
+        Sign Up
+      </button>
+
+    </form>
+
+    <!-- Footer Link -->
+    <div class="text-center pt-2 border-t border-dashed border-gray-200">
+      <p class="text-secondary font-medium">
+        Already have an account? 
+        <a href="#" class="text-primary font-bold hover:underline transition-all ml-1">Log In</a>
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Success Toast -->
+<div id="toast" class="fixed top-6 right-6 z-50 transform transition-all duration-300 translate-x-[150%] opacity-0">
+  <div class="bg-white rounded-2xl shadow-xl p-4 flex items-center gap-3 border-l-4 border-success ring-1 ring-black/5 min-w-[320px]">
+    <div class="size-10 bg-success/10 rounded-full flex items-center justify-center shrink-0">
+      <i data-lucide="check-circle-2" class="size-6 text-success"></i>
+    </div>
+    <div>
+      <h4 class="font-bold text-foreground text-sm">Account Created!</h4>
+      <p class="text-secondary text-xs mt-0.5">Redirecting to login...</p>
+    </div>
+    <button onclick="hideToast()" class="ml-auto text-secondary hover:text-foreground cursor-pointer">
+      <i data-lucide="x" class="size-4"></i>
+    </button>
+  </div>
+</div>
+
+<script>
+  // Initialize Icons
+  lucide.createIcons();
+
+  // Role Selection Logic
+  function selectRole(role) {
+    // Update hidden input
+    document.getElementById('inputRole').value = role;
+    
+    // Update visuals
+    const organizerCard = document.getElementById('role-organizer');
+    const attendeeCard = document.getElementById('role-attendee');
+    
+    if (role === 'organizer') {
+      organizerCard.classList.add('selected');
+      attendeeCard.classList.remove('selected');
+    } else {
+      attendeeCard.classList.add('selected');
+      organizerCard.classList.remove('selected');
+    }
+  }
+
+  // Password Toggle Logic
+  function togglePassword() {
+    const input = document.getElementById('inputPassword');
+    const icon = document.getElementById('eyeIcon');
+    
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.setAttribute('data-lucide', 'eye-off');
+    } else {
+      input.type = 'password';
+      icon.setAttribute('data-lucide', 'eye');
+    }
+    lucide.createIcons();
+  }
+
+  // Handle Register
+  function handleRegister(e) {
+    e.preventDefault();
+    const btn = e.target.querySelector('button[type="submit"]');
+    const originalText = btn.innerHTML;
+    
+    // Loading state
+    btn.disabled = true;
+    btn.innerHTML = `<span class="flex items-center justify-center gap-2"><i data-lucide="loader-2" class="animate-spin size-5"></i> Creating...</span>`;
+    lucide.createIcons();
+
+    // Simulate API call
+    setTimeout(() => {
+      showToast();
+      btn.innerHTML = originalText;
+      btn.disabled = false;
+      
+      // Simulate redirect
+      setTimeout(() => {
+        // location.href = '/login'; // Would go here in real app
+      }, 2000);
+    }, 1500);
+  }
+
+  // Toast Logic
+  function showToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.remove('translate-x-[150%]', 'opacity-0');
+    setTimeout(hideToast, 4000);
+  }
+
+  function hideToast() {
+    const toast = document.getElementById('toast');
+    toast.classList.add('translate-x-[150%]', 'opacity-0');
+  }
+</script>
+
+<script>
+// Fallback link handler (injected by ShaynaBuilder)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Show alert if no modal exists
+      var modal = document.getElementById('page-not-found-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        console.log('Navigation prevented: ' + this.href);
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EventHub - Neon Lights Festival 2024</title>
+<meta name="description" content="Book your tickets for Neon Lights Festival 2024. The biggest electronic music festival in Jakarta.">
+<link href="https://fonts.googleapis.com/css2?family=Lexend+Deca:wght@100..900&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<style type="text/tailwindcss">
+  :root {
+    --primary: #165DFF;
+    --primary-hover: #0E4BD9;
+    --foreground: #080C1A;
+    --secondary: #6A7686;
+    --muted: #EFF2F7;
+    --border: #F3F4F3;
+    --card-grey: #F1F3F6;
+    --success: #30B22D;
+    --error: #ED6B60;
+    --warning: #FED71F;
+    --accent-teal: #14B8A6;
+    --font-sans: 'Lexend Deca', sans-serif;
+  }
+  @theme inline {
+    --color-primary: var(--primary);
+    --color-primary-hover: var(--primary-hover);
+    --color-foreground: var(--foreground);
+    --color-secondary: var(--secondary);
+    --color-muted: var(--muted);
+    --color-border: var(--border);
+    --color-card-grey: var(--card-grey);
+    --color-accent-teal: var(--accent-teal);
+    --font-sans: var(--font-sans);
+    --radius-card: 24px;
+    --radius-button: 50px;
+  }
+  .sticky-summary {
+    position: sticky;
+    top: 110px; /* Navbar height + gap */
+  }
+</style>
+</head>
+<body class="font-sans bg-white text-foreground antialiased selection:bg-primary/20">
+
+<!-- NAVBAR -->
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-border h-[90px] transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-5 h-full flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#" class="flex items-center gap-2 group cursor-pointer">
+      <div class="size-10 bg-primary rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300">
+        <i data-lucide="zap" class="size-6 text-white"></i>
+      </div>
+      <span class="font-bold text-2xl tracking-tight text-foreground">EventHub</span>
+    </a>
+
+    <!-- Desktop Menu -->
+    <div class="hidden lg:flex items-center gap-8">
+      <a href="#" class="text-secondary hover:text-primary font-medium transition-colors cursor-pointer">Beranda</a>
+      <a href="#" class="text-foreground font-semibold transition-colors cursor-pointer">Event</a>
+      <a href="#" class="text-secondary hover:text-primary font-medium transition-colors cursor-pointer">Tentang</a>
+    </div>
+
+    <!-- Auth Buttons -->
+    <div class="flex items-center gap-3">
+      <a href="#" class="hidden sm:flex px-6 py-2.5 text-foreground font-semibold hover:text-primary transition-colors cursor-pointer">Login</a>
+      <a href="#" class="px-6 py-2.5 bg-foreground text-white rounded-full font-bold hover:bg-primary transition-all duration-300 cursor-pointer shadow-lg hover:shadow-primary/25">Daftar</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO SECTION -->
+<header class="relative w-full h-[500px] mt-[90px] group overflow-hidden">
+  <div class="absolute inset-0 bg-foreground/40 z-10"></div>
+  <div class="absolute inset-0 bg-gradient-to-t from-foreground via-transparent to-transparent z-20 opacity-90"></div>
+  <img src="https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1600&h=900&fit=crop" alt="Concert" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700">
+  
+  <div class="absolute bottom-0 left-0 w-full z-30 pb-10 pt-32 bg-gradient-to-t from-black/80 to-transparent">
+    <div class="max-w-7xl mx-auto px-5 flex flex-col gap-4">
+      <span class="px-3 py-1 bg-primary text-white text-xs font-bold rounded-full w-fit uppercase tracking-wider">Music Festival</span>
+      <h1 class="text-4xl md:text-6xl font-bold text-white leading-tight max-w-4xl">Neon Lights Festival 2024: The Awakening</h1>
+      <div class="flex flex-wrap items-center gap-6 text-white/90 mt-2">
+        <div class="flex items-center gap-2">
+          <i data-lucide="user" class="size-5 text-primary"></i>
+          <span class="font-medium">By EventHub Originals</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <i data-lucide="calendar" class="size-5 text-primary"></i>
+          <span class="font-medium">24 - 26 Aug 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- MAIN CONTENT -->
+<main class="max-w-7xl mx-auto px-5 py-10">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    
+    <!-- LEFT COLUMN: INFO & TICKETS -->
+    <div class="lg:col-span-2 space-y-10">
+      
+      <!-- Event Description -->
+      <section class="flex flex-col gap-4">
+        <h2 class="text-2xl font-bold text-foreground">Tentang Event</h2>
+        <div class="prose prose-lg text-secondary leading-relaxed">
+          <p>
+            Bersiaplah untuk festival musik elektronik terbesar tahun ini! Neon Lights Festival kembali hadir di Jakarta dengan lineup artis internasional yang spektakuler. Pengalaman audio-visual imersif yang akan membawa Anda ke dimensi lain.
+          </p>
+          <p class="mt-4">
+            Tahun ini kami menghadirkan 3 panggung megah, instalasi seni interaktif, dan area kuliner yang dikurasi khusus. Jangan lewatkan penampilan spesial dari DJ top dunia dan talenta lokal terbaik.
+          </p>
+        </div>
+        
+        <!-- Highlights/Tags -->
+        <div class="flex flex-wrap gap-3 mt-2">
+          <span class="px-4 py-2 bg-muted text-secondary font-medium rounded-xl text-sm">Electronic</span>
+          <span class="px-4 py-2 bg-muted text-secondary font-medium rounded-xl text-sm">Outdoor</span>
+          <span class="px-4 py-2 bg-muted text-secondary font-medium rounded-xl text-sm">18+ Only</span>
+          <span class="px-4 py-2 bg-muted text-secondary font-medium rounded-xl text-sm">Food & Bev</span>
+        </div>
+      </section>
+
+      <!-- Ticket Section -->
+      <section id="tickets" class="scroll-mt-28">
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-foreground">Pilih Tiket</h2>
+          <span class="text-sm text-secondary font-medium">Harga sudah termasuk pajak</span>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <!-- Ticket Tier 1: Sold Out -->
+          <div class="group relative flex flex-col md:flex-row p-6 rounded-3xl border border-border bg-gray-50 opacity-70 cursor-not-allowed overflow-hidden">
+            <div class="absolute -right-12 top-6 bg-secondary text-white text-xs font-bold py-1 px-12 rotate-45 z-10">SOLD OUT</div>
+            <div class="flex-1 min-w-0 pr-4">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-gray-500">Early Bird - 3 Day Pass</h3>
+              </div>
+              <p class="text-secondary text-sm line-clamp-2">Akses masuk 3 hari festival dengan harga spesial early bird.</p>
+              <div class="mt-4 flex items-center gap-2 text-gray-400">
+                <i data-lucide="info" class="size-4"></i>
+                <span class="text-xs font-medium">Tiket tidak dapat ditukar</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end justify-between gap-4 mt-4 md:mt-0 md:border-l md:border-border md:pl-6 min-w-[140px]">
+              <div class="text-right">
+                <p class="text-lg font-bold text-gray-500 decoration-slice">IDR 650.000</p>
+              </div>
+              <button disabled class="w-full py-2 bg-gray-200 text-gray-500 rounded-xl font-bold text-sm cursor-not-allowed">Habis</button>
+            </div>
+          </div>
+
+          <!-- Ticket Tier 2: General Admission -->
+          <div class="ticket-card relative flex flex-col md:flex-row p-6 rounded-3xl border border-border bg-white hover:border-primary transition-all duration-300 shadow-sm" data-id="ga" data-price="850000">
+            <div class="flex-1 min-w-0 pr-4">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-foreground">Presale 2 - GA</h3>
+                <span class="px-2 py-0.5 bg-success/10 text-success text-xs font-bold rounded-full">Available</span>
+              </div>
+              <p class="text-secondary text-sm">Akses masuk area General Admission selama 3 hari. Termasuk akses ke semua panggung.</p>
+              <div class="mt-4 flex items-center gap-2 text-primary">
+                <i data-lucide="check-circle" class="size-4"></i>
+                <span class="text-xs font-bold">Best Seller</span>
+              </div>
+            </div>
+            <div class="flex flex-col items-end justify-between gap-4 mt-4 md:mt-0 md:border-l md:border-border md:pl-6 min-w-[150px]">
+              <div class="text-right">
+                <p class="text-lg font-bold text-primary">IDR 850.000</p>
+                <p class="text-xs text-secondary">Sisa: 45 Tiket</p>
+              </div>
+              <!-- Quantity Selector -->
+              <div class="flex items-center bg-muted rounded-xl p-1">
+                <button onclick="updateQty('ga', -1)" class="size-8 flex items-center justify-center rounded-lg bg-white text-foreground shadow-sm hover:text-primary transition-colors cursor-pointer" aria-label="Decrease">
+                  <i data-lucide="minus" class="size-4"></i>
+                </button>
+                <span id="qty-ga" class="w-10 text-center font-bold text-foreground">0</span>
+                <button onclick="updateQty('ga', 1)" class="size-8 flex items-center justify-center rounded-lg bg-white text-foreground shadow-sm hover:text-primary transition-colors cursor-pointer" aria-label="Increase">
+                  <i data-lucide="plus" class="size-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Ticket Tier 3: VIP -->
+          <div class="ticket-card relative flex flex-col md:flex-row p-6 rounded-3xl border border-border bg-white hover:border-warning transition-all duration-300 shadow-sm" data-id="vip" data-price="2500000">
+            <div class="flex-1 min-w-0 pr-4">
+              <div class="flex items-center gap-3 mb-2">
+                <h3 class="text-xl font-bold text-foreground">VIP Access - 3 Day</h3>
+                <span class="px-2 py-0.5 bg-primary/10 text-primary text-xs font-bold rounded-full">VIP</span>
+                <span class="px-2 py-0.5 bg-warning text-foreground text-xs font-bold rounded-full">SISA SEDIKIT!</span>
+              </div>
+              <p class="text-secondary text-sm">Akses area VIP, Fast Track entry, VIP Toilet, dan Private Bar. View terbaik ke Main Stage.</p>
+              <ul class="mt-3 space-y-1">
+                <li class="flex items-center gap-2 text-xs text-secondary"><i data-lucide="star" class="size-3 text-warning"></i> Fast Track Entry</li>
+                <li class="flex items-center gap-2 text-xs text-secondary"><i data-lucide="star" class="size-3 text-warning"></i> VIP Lounge Access</li>
+              </ul>
+            </div>
+            <div class="flex flex-col items-end justify-between gap-4 mt-4 md:mt-0 md:border-l md:border-border md:pl-6 min-w-[150px]">
+              <div class="text-right">
+                <p class="text-lg font-bold text-primary">IDR 2.500.000</p>
+                <p class="text-xs text-error font-semibold">Sisa: 5 Tiket</p>
+              </div>
+              <!-- Quantity Selector -->
+              <div class="flex items-center bg-muted rounded-xl p-1">
+                <button onclick="updateQty('vip', -1)" class="size-8 flex items-center justify-center rounded-lg bg-white text-foreground shadow-sm hover:text-primary transition-colors cursor-pointer" aria-label="Decrease">
+                  <i data-lucide="minus" class="size-4"></i>
+                </button>
+                <span id="qty-vip" class="w-10 text-center font-bold text-foreground">0</span>
+                <button onclick="updateQty('vip', 1)" class="size-8 flex items-center justify-center rounded-lg bg-white text-foreground shadow-sm hover:text-primary transition-colors cursor-pointer" aria-label="Increase">
+                  <i data-lucide="plus" class="size-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT COLUMN: STICKY SIDEBAR -->
+    <div class="relative lg:col-span-1">
+      <div class="sticky-summary flex flex-col gap-6">
+        
+        <!-- Event Detail Card -->
+        <div class="rounded-3xl border border-border bg-white p-6 shadow-sm">
+          <h3 class="font-bold text-lg mb-4">Detail Lokasi</h3>
+          <div class="space-y-4">
+            <div class="flex gap-4">
+              <div class="size-10 bg-muted rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="map-pin" class="size-5 text-primary"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-sm">GBK Sports Complex</p>
+                <p class="text-sm text-secondary">Jl. Pintu Satu Senayan, Jakarta Pusat</p>
+                <a href="#" class="text-xs text-primary font-bold hover:underline mt-1 block cursor-pointer">Lihat di Peta</a>
+              </div>
+            </div>
+            <div class="flex gap-4">
+              <div class="size-10 bg-muted rounded-xl flex items-center justify-center shrink-0">
+                <i data-lucide="clock" class="size-5 text-primary"></i>
+              </div>
+              <div>
+                <p class="font-semibold text-sm">Waktu</p>
+                <p class="text-sm text-secondary">Open Gate: 14:00 WIB</p>
+                <p class="text-sm text-secondary">Start: 16:00 WIB</p>
+              </div>
+            </div>
+          </div>
+          <hr class="border-border my-4">
+          <div class="flex items-center gap-3">
+            <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&h=100&fit=crop" alt="Organizer" class="size-10 rounded-full ring-2 ring-border">
+            <div class="flex-1 min-w-0">
+              <p class="text-xs text-secondary font-medium">Diselenggarakan oleh</p>
+              <p class="font-bold text-sm truncate">EventHub Originals</p>
+            </div>
+            <button class="size-9 bg-primary/10 rounded-full flex items-center justify-center hover:bg-primary/20 transition-colors cursor-pointer">
+              <i data-lucide="message-circle" class="size-4 text-primary"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Order Summary (Sticky) -->
+        <div class="rounded-3xl border border-border bg-white p-6 shadow-lg ring-1 ring-black/5">
+          <h3 class="font-bold text-lg mb-4">Ringkasan Pesanan</h3>
+          
+          <!-- Empty State -->
+          <div id="summary-empty" class="py-4 text-center">
+            <p class="text-secondary text-sm">Belum ada tiket yang dipilih</p>
+          </div>
+
+          <!-- Selected Items List -->
+          <div id="summary-items" class="space-y-3 mb-4 hidden">
+            <!-- Items injected by JS -->
+          </div>
+
+          <hr class="border-border my-4">
+          
+          <div class="flex items-center justify-between mb-6">
+            <span class="font-medium text-secondary">Total Bayar</span>
+            <span id="total-price" class="font-bold text-xl text-primary">IDR 0</span>
+          </div>
+
+          <button id="checkout-btn" onclick="openConfirmationModal()" disabled class="w-full py-4 bg-primary text-white rounded-full font-bold shadow-lg hover:bg-primary-hover hover:shadow-primary/30 transition-all duration-300 disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2">
+            <span>Beli Tiket Sekarang</span>
+            <i data-lucide="arrow-right" class="size-5"></i>
+          </button>
+          
+          <p class="text-xs text-center text-gray-400 mt-3">Transaksi aman & terenkripsi</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer class="bg-foreground text-white pt-20 pb-10 mt-20">
+  <div class="max-w-7xl mx-auto px-5">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-10 mb-16">
+      <div class="md:col-span-2">
+        <div class="flex items-center gap-2 mb-6">
+          <div class="size-8 bg-primary rounded-lg flex items-center justify-center">
+            <i data-lucide="zap" class="size-5 text-white"></i>
+          </div>
+          <span class="font-bold text-xl">EventHub</span>
+        </div>
+        <p class="text-gray-400 max-w-sm mb-6">Platform pemesanan tiket event terpercaya di Indonesia. Temukan pengalaman tak terlupakan.</p>
+        <div class="flex gap-4">
+          <a href="#" class="size-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer"><i data-lucide="instagram" class="size-5"></i></a>
+          <a href="#" class="size-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer"><i data-lucide="twitter" class="size-5"></i></a>
+          <a href="#" class="size-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-primary transition-colors cursor-pointer"><i data-lucide="facebook" class="size-5"></i></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="font-bold mb-6">Tentang</h4>
+        <ul class="space-y-4 text-gray-400">
+          <li><a href="#" class="hover:text-primary transition-colors cursor-pointer">Tentang Kami</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors cursor-pointer">Karir</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors cursor-pointer">Blog</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="font-bold mb-6">Bantuan</h4>
+        <ul class="space-y-4 text-gray-400">
+          <li><a href="#" class="hover:text-primary transition-colors cursor-pointer">Pusat Bantuan</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors cursor-pointer">Syarat & Ketentuan</a></li>
+          <li><a href="#" class="hover:text-primary transition-colors cursor-pointer">Kebijakan Privasi</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+      <p class="text-gray-500 text-sm">© 2024 EventHub Indonesia. All rights reserved.</p>
+      <div class="flex gap-6 text-sm text-gray-500">
+        <a href="#" class="hover:text-white transition-colors cursor-pointer">Privacy</a>
+        <a href="#" class="hover:text-white transition-colors cursor-pointer">Terms</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- CONFIRMATION MODAL -->
+<div id="confirmation-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4">
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm transition-opacity opacity-0" id="modal-backdrop" onclick="closeConfirmationModal()"></div>
+  
+  <!-- Modal Content -->
+  <div class="relative bg-white rounded-3xl w-full max-w-md p-6 shadow-2xl transform scale-95 opacity-0 transition-all duration-300" id="modal-content">
+    <div class="absolute right-4 top-4">
+      <button onclick="closeConfirmationModal()" class="size-8 rounded-full bg-muted flex items-center justify-center hover:bg-gray-200 transition-colors cursor-pointer">
+        <i data-lucide="x" class="size-4 text-secondary"></i>
+      </button>
+    </div>
+
+    <div class="flex flex-col items-center text-center mb-6">
+      <div class="size-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
+        <i data-lucide="ticket" class="size-8 text-primary"></i>
+      </div>
+      <h3 class="text-xl font-bold text-foreground">Konfirmasi Pesanan</h3>
+      <p class="text-secondary text-sm mt-1">Pastikan detail pesanan Anda sudah benar.</p>
+    </div>
+
+    <!-- Order Recap -->
+    <div class="bg-muted/50 rounded-2xl p-4 mb-6 border border-border">
+      <h4 class="font-bold text-sm mb-3">Neon Lights Festival 2024</h4>
+      <div id="modal-items" class="space-y-2 mb-3 border-b border-border pb-3">
+        <!-- JS injected items -->
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="font-medium text-secondary">Total Tagihan</span>
+        <span id="modal-total" class="font-bold text-lg text-primary">IDR 0</span>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-3">
+      <button onclick="processPayment()" class="w-full py-3.5 bg-primary text-white rounded-full font-bold hover:bg-primary-hover shadow-lg hover:shadow-primary/30 transition-all cursor-pointer flex items-center justify-center gap-2">
+        <span>Lanjut ke Pembayaran</span>
+        <i data-lucide="credit-card" class="size-5"></i>
+      </button>
+      <button onclick="closeConfirmationModal()" class="w-full py-3.5 bg-white text-secondary ring-1 ring-border rounded-full font-bold hover:bg-gray-50 transition-all cursor-pointer">
+        Batal
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- SUCCESS TOAST (Simple implementation) -->
+<div id="toast" class="fixed bottom-10 right-5 transform translate-y-20 opacity-0 transition-all duration-300 z-[110] bg-foreground text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4">
+  <div class="size-8 bg-success rounded-full flex items-center justify-center shrink-0">
+    <i data-lucide="check" class="size-5 text-white"></i>
+  </div>
+  <div>
+    <h4 class="font-bold">Berhasil!</h4>
+    <p class="text-sm text-gray-300">Anda akan dialihkan ke halaman pembayaran.</p>
+  </div>
+</div>
+
+<script>
+  // Data State
+  const tickets = {
+    'ga': { name: 'Presale 2 - GA', price: 850000, qty: 0, max: 10 },
+    'vip': { name: 'VIP Access - 3 Day', price: 2500000, qty: 0, max: 5 }
+  };
+
+  // Initial Load
+  document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+  });
+
+  // Helper: Format Currency
+  function formatIDR(amount) {
+    return 'IDR ' + amount.toLocaleString('id-ID');
+  }
+
+  // Action: Update Quantity
+  function updateQty(id, change) {
+    const ticket = tickets[id];
+    const newQty = ticket.qty + change;
+    
+    if (newQty >= 0 && newQty <= ticket.max) {
+      ticket.qty = newQty;
+      document.getElementById(`qty-${id}`).innerText = newQty;
+      updateSummary();
+    }
+  }
+
+  // Logic: Update Summary Panel
+  function updateSummary() {
+    const summaryList = document.getElementById('summary-items');
+    const emptyState = document.getElementById('summary-empty');
+    const totalEl = document.getElementById('total-price');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    
+    let total = 0;
+    let itemCount = 0;
+    let html = '';
+
+    for (const [key, t] of Object.entries(tickets)) {
+      if (t.qty > 0) {
+        itemCount++;
+        total += t.price * t.qty;
+        html += `
+          <div class="flex justify-between items-start text-sm">
+            <div class="flex flex-col">
+              <span class="font-semibold text-foreground">${t.name}</span>
+              <span class="text-xs text-secondary">${t.qty}x @ ${formatIDR(t.price)}</span>
+            </div>
+            <span class="font-medium text-foreground">${formatIDR(t.price * t.qty)}</span>
+          </div>
+        `;
+      }
+    }
+
+    if (itemCount > 0) {
+      summaryList.innerHTML = html;
+      summaryList.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+      checkoutBtn.disabled = false;
+    } else {
+      summaryList.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      checkoutBtn.disabled = true;
+    }
+
+    totalEl.innerText = formatIDR(total);
+  }
+
+  // Logic: Modal Functions
+  function openConfirmationModal() {
+    const modal = document.getElementById('confirmation-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const content = document.getElementById('modal-content');
+    const modalItems = document.getElementById('modal-items');
+    const modalTotal = document.getElementById('modal-total');
+
+    // Populate Modal Data
+    let html = '';
+    let total = 0;
+    for (const [key, t] of Object.entries(tickets)) {
+      if (t.qty > 0) {
+        total += t.price * t.qty;
+        html += `
+          <div class="flex justify-between text-sm py-1">
+            <span class="text-secondary">${t.qty}x ${t.name}</span>
+            <span class="font-medium text-foreground">${formatIDR(t.price * t.qty)}</span>
+          </div>
+        `;
+      }
+    }
+    modalItems.innerHTML = html;
+    modalTotal.innerText = formatIDR(total);
+
+    // Show Animation
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    // Small delay for transition to work
+    setTimeout(() => {
+      backdrop.classList.remove('opacity-0');
+      content.classList.remove('scale-95', 'opacity-0');
+      content.classList.add('scale-100', 'opacity-100');
+    }, 10);
+  }
+
+  function closeConfirmationModal() {
+    const modal = document.getElementById('confirmation-modal');
+    const backdrop = document.getElementById('modal-backdrop');
+    const content = document.getElementById('modal-content');
+
+    backdrop.classList.add('opacity-0');
+    content.classList.remove('scale-100', 'opacity-100');
+    content.classList.add('scale-95', 'opacity-0');
+
+    setTimeout(() => {
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }, 300);
+  }
+
+  function processPayment() {
+    closeConfirmationModal();
+    
+    // Show Toast
+    const toast = document.getElementById('toast');
+    toast.classList.remove('translate-y-20', 'opacity-0');
+    
+    setTimeout(() => {
+      toast.classList.add('translate-y-20', 'opacity-0');
+    }, 3000);
+  }
+</script>
+
+<script>
+// Fallback link handler (injected by ShaynaBuilder)
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      // Show alert if no modal exists
+      var modal = document.getElementById('page-not-found-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+      } else {
+        console.log('Navigation prevented: ' + this.href);
+      }
+    });
+  });
+});
+</script>
+</body>
+</html>
