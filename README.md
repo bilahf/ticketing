@@ -113,10 +113,10 @@ ticketing/
 ![Landing Page](https://github.com/bilahf/ticketing/blob/main/screenshots/Screenshot%20(2262).png)
 
 ### Event Detail
-![Event Detail](https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=event%20detail%20page%20with%20ticket%20purchase%20form&image_size=landscape_16_9)
+![Event Detail](https://github.com/bilahf/ticketing/blob/main/screenshots/Screenshot%20(2264).png)
 
 ### My Tickets
-![My Tickets](https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=tickets%20page%20with%20qr%20codes&image_size=landscape_16_9)
+![My Tickets](https://github.com/bilahf/ticketing/blob/main/screenshots/Screenshot%20(2263).png)
 
 ## Future Improvements
 
