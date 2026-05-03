@@ -110,7 +110,7 @@ ticketing/
 ## Screenshots
 
 ### Landing Page
-![Landing Page](https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=modern%20event%20ticketing%20platform%20landing%20page%20with%20event%20cards%20and%20search%20bar&image_size=landscape_16_9)
+![Landing Page](https://github.com/bilahf/ticketing/blob/main/screenshots/Screenshot%20(2262).png)
 
 ### Event Detail
 ![Event Detail](https://coresg-normal.trae.ai/api/ide/v1/text_to_image?prompt=event%20detail%20page%20with%20ticket%20purchase%20form&image_size=landscape_16_9)
